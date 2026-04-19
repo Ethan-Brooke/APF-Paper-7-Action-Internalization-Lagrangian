@@ -9,7 +9,7 @@ This file tracks the version history of Paper 7 (Action, Internalization, and th
 - **Version in this repo:** v2.0
 - **File in this repo:** `Paper_7_Action_Internalization_Lagrangian_v2.0.tex` + `.pdf`
 - **Page count:** 22 pp
-- **Release date:** 2026-04-18
+- **Release date:** 2026-04-19
 - **Codebase version at build:** v6.9 (2026-04-18)
 
 ## Zenodo record
