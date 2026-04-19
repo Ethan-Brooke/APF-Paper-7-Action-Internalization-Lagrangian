@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apf-paper7"
+version = "2.0"
+description = "Action Internalization Lagrangian — executable mathematical appendix"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+  {name = "Ethan Brooke", email = "brooke.ethan@gmail.com"}
+]
+keywords = ["action principle", "spectral action", "Connes", "Seeley-DeWitt", "Standard Model Lagrangian", "Type-I seesaw", "internalization", "partition function"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Physics",
+  "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = ["numpy>=1.20", "scipy>=1.7"]
+
+[project.urls]
+Homepage = "https://github.com/Ethan-Brooke/APF-Paper-7-Action-Internalization-Lagrangian"
+"Bug Tracker" = "https://github.com/Ethan-Brooke/APF-Paper-7-Action-Internalization-Lagrangian/issues"
+"Zenodo" = "https://doi.org/10.5281/zenodo.18604875"
+
+[tool.setuptools.packages.find]
+include = ["apf*"]

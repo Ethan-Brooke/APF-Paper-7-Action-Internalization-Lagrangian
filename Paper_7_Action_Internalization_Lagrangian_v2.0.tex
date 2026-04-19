@@ -1,0 +1,801 @@
+% ======================================================================
+% Paper 7 — ACTION: Internalization, the Lagrangian, and the Standard
+% Model from Finite Admissibility
+%
+% v1.0 (Feb 2026): PDF-only release on Zenodo (DOI 10.5281/zenodo.18604875).
+%   "A Minimal Quantum of Action from Finite Admissibility." Six pages.
+%   Isolation-of-Zero theorem (Theorem 5.2) + T0.4' BFS certificate +
+%   k! history sectors + connection to enforcement potential V(Phi).
+%
+% v2.0 (April 2026): First .tex release. Full-scope rebuild of Paper 7 into
+%   a derivation of the SM Lagrangian + gravity from APF internalization.
+%   Preserves all v1.0 content verbatim (Part I) and adds four new parts:
+%
+%   Part II — The APF partition function Z_0(beta) = (1 + d_eff
+%     e^{-beta eps*})^{C_total}; gapped-ground-state regime of validity
+%     (kT << eps*); saturation factorisation Z_sat = N_micro exp(-beta
+%     E_sat(eta)). Backs Paper 3 v3.0 §5 ledger-accounting principle
+%     thermodynamic formalism.
+%
+%   Part III — Spectral action = APF partition function (L_spectral_
+%     action_internal). SM Lagrangian + gravity read from Seeley-DeWitt
+%     expansion. Scalar-potential internalization (L_normalization_
+%     coefficient, L_scalar_potential_form). Enforcement potential V(Phi)
+%     expanded.
+%
+%   Part IV — Geometric internalization: continuum limit (L_kolmogorov
+%     _internal), smooth atlas (L_chartability), Einstein equations
+%     uniqueness (L_lovelock_internal), direct-product Poincaré × Gauge
+%     (L_coleman_mandula_internal), causal-order metric reconstruction
+%     (L_HKM_causal_geometry, L_Malament_uniqueness).
+%
+%   Part V — SM Lagrangian extensions: one-loop beta functions
+%     (T6B_beta_one_loop), Type-I seesaw (L_seesaw_type_I), spin-statistics
+%     and gauge-group recovery (L_Pauli_Jordan, L_McKean_Singer_internal,
+%     L_Tannaka_Krein), BSM directions (conservative treatment).
+%
+%   PLEC overlay applied throughout: abstract + §1 PLEC framing,
+%   T_eps retagged as MD component, new PLEC assumption inventory.
+%   Matches Papers 1 v4.0-PLEC, 2 v5.3-PLEC, 3 v3.0, 13 v8.3-PLEC.
+%
+%   Accompanying Technical Supplement v1.0 contains full formal proofs.
+% ======================================================================
+
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+
+\titleformat{\section}{\Large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Paper 7: Action (v2.0)}
+\fancyhead[R]{\small\itshape E.\,Brooke}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+\tcbuselibrary{skins,breakable}
+
+\tcbset{
+    apfbox/.style={
+        enhanced,
+        colback=black!3,
+        frame hidden,
+        borderline={0.5pt}{0pt}{black},
+        arc=0pt,
+        left=8pt, right=8pt, top=8pt, bottom=8pt,
+        fonttitle=\bfseries\color{black},
+        coltitle=black,
+        detach title,
+        before upper={\tcbtitle\par\smallskip},
+        before skip=14pt,
+        after skip=14pt,
+        grow to left by=-8pt,
+        grow to right by=-8pt,
+        sharp corners,
+        breakable,
+    }
+}
+
+\newenvironment{varlist}{\begin{itemize}[nosep,leftmargin=2em]}{\end{itemize}}
+\newcommand{\coderef}[2]{\smallskip\noindent\textit{Code reference:} \texttt{#1} in \texttt{#2}.}
+\newcommand{\SU}{\mathrm{SU}}
+\newcommand{\U}{\mathrm{U}}
+\newcommand{\epitag}[1]{\textbf{[#1]}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{
+  \textbf{Paper 7: Action}\\
+  \large Internalization, the Lagrangian, and the Standard Model\\
+  \large from Finite Admissibility\\
+  \normalsize v2.0\\
+  \normalsize E.\ S.\ Brooke\\
+  Admissibility Physics --- February 2026 (v2.0 full-scope rebuild: April 2026)
+}
+\author{}
+\date{}
+
+\setstretch{1.05}
+\setlist[itemize]{itemsep=3pt,topsep=4pt}
+\setlist[enumerate]{itemsep=3pt,topsep=4pt}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+The Lagrangian of the Standard Model, together with Einstein--Hilbert gravity, a cosmological constant, the Higgs potential, and the one-loop renormalisation-group flow, is derived here from finite admissibility alone.  The derivation proceeds through four stages.
+
+First, a structural result from the February 2026 release: zero accumulated action is inadmissible for any path that introduces an irreversible distinction.  The minimum $\varepsilon$ is the MD (minimum-cost-floor) component of PLEC made quantitative.  When accumulated enforcement cost is identified with action in the variational regime of Paper~6, $\varepsilon$ is Planck's constant.
+
+Second, the APF partition function $Z_0(\beta) = (1 + d_{\mathrm{eff}} \, e^{-\beta \varepsilon^*})^{C_{\mathrm{total}}}$ is derived elementarily from the binomial identity over admissible subsets of the capacity budget.  At $d_{\mathrm{eff}}=1$ it is Fermi--Dirac; at $d_{\mathrm{eff}}=102$ it is the Potts-like generalisation forced by $L_{\mathrm{self\_exclusion}}$.  APF is the ground-state approximation valid for $kT \ll \varepsilon^*$; identified with $\varepsilon^* \sim E_P$, this covers the observable universe by $\sim\!10^{32}$ and breaks down at the Planck era.  Saturation factorisation gives the thermodynamic formalism Paper~3~v3.0 forward-references for the ledger-accounting principle.
+
+Third, the central structural identity of this paper: the Connes spectral action $S_f = \mathrm{Tr}[f(D/\Lambda)]$ is identical to the APF partition function $Z(\beta) = \mathrm{Tr}[e^{-\beta H}]$ (L\_spectral\_action\_internal).  The Seeley--DeWitt expansion of the heat kernel then yields the cosmological constant, Einstein--Hilbert action, gauge kinetic terms, and Higgs potential as separate expansion coefficients.  The SM Lagrangian plus gravity is not written down; it is read off the partition function.
+
+Fourth, geometric and group-theoretic internalization: the continuum limit, smooth atlas, Einstein field equations in $d=4$, direct-product $\mathrm{Poincar\acute{e}}\times G_{\mathrm{gauge}}$ structure, and full Lorentzian metric reconstruction from causal order are all derived from APF, eliminating the last external theorem imports of the framework.  One-loop beta functions, the Type-I seesaw, spin-statistics, and gauge-group recovery follow as arithmetic and linear-algebra consequences of the APF-derived particle content.
+
+We frame the quantum-of-action theorem as PLEC's MD component made sharp, and the spectral-action identity as PLEC's variational content made explicit.  The four structurally necessary PLEC components --- A1 (finite upper bound), MD (cost floor), A2 (argmin selection), BW (budget-window non-degeneracy) --- each do independent work and are inventoried in Appendix~C.  Full formal proofs appear in the accompanying Technical Supplement v1.0.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+
+% =====================================================================
+\section{Introduction}\label{sec:intro}
+% =====================================================================
+
+\subsection{The Problem}
+Classical mechanics permits arbitrarily small action.  Infinitesimal changes in configuration correspond to vanishing accumulated cost.  Physical reality does not share this feature.  Empirically, action exhibits a minimum scale --- Planck's constant $\hbar$ --- below which no transitions occur.  The usual treatment encodes this minimum axiomatically.  Quantum mechanics postulates $\hbar$; it does not explain why a minimum must exist.
+
+Classical mechanics also presents the Lagrangian as something the physicist writes down.  The form of the SM Lagrangian --- the gauge kinetic terms, the Higgs potential, the Einstein--Hilbert action, the specific Yukawa structure --- is something one \emph{chooses}, constrained by symmetry, power-counting renormalisability, and experiment.  This is a strong input, even when disguised as a principle.  A framework that began with only finite admissibility should, in principle, be able to derive the Lagrangian rather than import it.
+
+\subsection{The Answer}
+This paper shows that zero action is structurally excluded for record-forming transitions under finite admissibility (Part~I), and that the SM Lagrangian plus Einstein--Hilbert gravity is the Seeley--DeWitt expansion of the APF partition function (Parts~II--III), with the underlying geometry and symmetry group forced by admissibility (Part~IV) and the one-loop flow and BSM extensions following arithmetically (Part~V).
+
+The argument chain is: (1)~Distinctions require enforcement (Paper~1).  (2)~Enforcement capacity is finite at each interface.  (3)~Independent distinctions require nonzero enforcement cost.  (4)~Accumulated cost tracks irreversible commitment.  (5)~Record-forming transitions cannot have zero cost.  (6)~In variational regimes, this cost is action.  (7)~Therefore zero action is inadmissible.  The minimum is not postulated; it is derived from finite enforceability.
+
+(8)~The APF partition function over admissible capacity subsets factorizes as $Z(\beta) = \mathrm{Tr}[e^{-\beta H}]$ on the finite Hilbert space $(\mathbb{C}^2)^{\otimes 61}$.  (9)~The Connes spectral action on the APF spectral triple is, by direct computation, identical to this partition function at $\beta = 1/\Lambda^2$.  (10)~The Seeley--DeWitt small-parameter expansion of the heat kernel produces the cosmological constant, Einstein--Hilbert action, gauge kinetic terms, and Higgs potential as distinct terms with coefficients computed from APF-derived matrices.  The Lagrangian is the heat-kernel expansion of the admissibility partition function.
+
+\subsection{PLEC framing}
+This paper sits inside the PLEC rollout.  PLEC (the \emph{Principle of Least Enforcement Cost}) is the canonical variational formulation of admissibility, subordinate to the Enforceability of Distinction (Paper~1).  It is a statement, not an axiom: admissible evolution is the cost-minimum on a feasible set bounded above by A1 and bounded below by MD.  Paper~1 proves that PLEC has four structurally necessary components --- any one of which, if removed, produces a degenerate or ill-posed optimization:
+\begin{itemize}
+\item \textbf{A1} (\emph{finite upper bound}): enforcement capacity is finite.
+\item \textbf{MD} (\emph{minimum cost floor}): non-trivial distinctions have positive enforcement cost, bounded below by $\varepsilon > 0$.
+\item \textbf{A2} (\emph{argmin selection}): the admissible configuration is the cost-minimum on the feasible set, not a generic element.
+\item \textbf{BW} (\emph{budget-window non-degeneracy}): the feasible set is genuinely two-sided; neither A1 nor MD is saturated everywhere.
+\end{itemize}
+
+Paper~7 establishes two direct payoffs of PLEC's structural content.  First, applied to record-forming admissible paths, the MD component forces a strictly positive minimum on accumulated cost --- the quantum of action.  Second, the A2 component (\emph{argmin} over a cost functional) is what selects the spectral action as the \emph{unique} action satisfying spectral invariance, gauge invariance, and positivity; internalising the Lagrangian is internalising PLEC's variational structure itself.
+
+\subsection{What this paper does NOT claim}
+\begin{itemize}
+\item \emph{Not that we compute $\hbar$ numerically.}  The structural minimum $\varepsilon$ is proved to be positive and universal.  Its numerical value depends on the specific capacity budget of our universe and is empirical.
+\item \emph{Not that we derive specific Yukawa values in this paper.}  The Yukawa matrix and mass hierarchy live in Paper~4 (\texttt{generations.py}).  We use the APF-derived particle content as input.
+\item \emph{Not that we resolve the hierarchy or little-hierarchy problems.}  The Higgs potential form is derived; the specific scale $\sigma_0 \sim 246$ GeV comes from $L_{\mathrm{sigma\_VEV}}$ and requires the full capacity-budget structure.
+\item \emph{Not that BSM predictions are quantitative.}  Dark matter, inflation, and baryogenesis appear in Part~V as mechanisms that follow naturally from APF structure; quantitative predictions require further work and are flagged as such.
+\item \emph{Not that the spectral-action identity requires noncommutative geometry as a prior commitment.}  The identity works in the reverse direction: one computes the APF partition function directly, recognises it as a spectral action by inspection, and inherits the NCG toolkit.  NCG notation is used; it is not a logical dependency.
+\end{itemize}
+
+% =====================================================================
+\section*{Part I — The Quantum of Action}
+\addcontentsline{toc}{section}{Part I — The Quantum of Action}
+% =====================================================================
+
+\begin{tcolorbox}[apfbox, title={Operational primitives: where each term is defined and used}]
+Paper~7 takes Paper~1's PLEC/A1 foundation and Paper~2's capacity counting as inputs, then derives the minimum quantum of action, the APF partition function, the identity with Connes' spectral action, and the Standard Model Lagrangian.  Five operational primitives carry the argument.  This box is a wayfinder, not new content; every claim points to where the term is defined, axiomatized, or derived.
+
+\begin{description}[topsep=2pt,itemsep=2pt]
+  \item[Quantum of action $\varepsilon^*$.]  The minimum enforcement cost required to form an admissible record --- the ``smallest unit'' of committed capacity at a quantum interface.  \emph{Defined:} \S\ref{sec:primitives} (primitives).  \emph{Derived as floor:} the Minimum Action Theorem (\S\ref{sec:mintheorem}).  \emph{Isolation from zero:} \S\ref{sec:records}.  \emph{Related to $\hbar$:} Part V identification table (the numerical value depends on the universe's specific capacity budget and is deliberately not fixed within Paper~7).
+  \item[Partition function $Z(\beta)$.]  The APF-level partition function over admissible records: $Z_0(\beta) = (1 + d_{\mathrm{eff}}\,e^{-\beta\varepsilon^*})^{C_{\mathrm{total}}}$ in the non-interacting regime.  \emph{Derived in closed form:} \S\ref{sec:partfn}.  \emph{Regime of validity:} gapped-ground-state regime $k_B T \ll \varepsilon^*$, with margin $\sim 10^{32}$ below Planck (\S\ref{sec:validity}).
+  \item[Saturation factorisation.]  The decomposition $Z_{\mathrm{sat}}(\beta, \eta) = N_{\mathrm{micro}}\cdot\exp(-\beta E_{\mathrm{sat}}(\eta))$, where $N_{\mathrm{micro}} = d_{\mathrm{eff}}^{C_{\mathrm{total}}}$ is a structural count and $E_{\mathrm{sat}}(\eta)$ is a configuration-dependent energy.  \emph{Proved:} \S\ref{sec:satfact}.  \emph{Discharges Paper~3's forward-reference} for the thermodynamic formalism of the ledger-accounting principle.
+  \item[Spectral triple $(A, H, D)$.]  An algebra $A$, a Hilbert space $H$, and a Dirac operator $D$ whose spectrum encodes admissibility cost.  \emph{Used under hypothesis H1} (spectral-triple ansatz, flagged in the Technical Supplement red-team).  \emph{Load-bearing in the structural pivot:} spectral action equals APF partition function at a Boltzmann cutoff (\S\ref{sec:specaction}).
+  \item[Seeley--DeWitt expansion.]  The asymptotic expansion of the heat-kernel trace of $D^2/\Lambda^2$ in inverse powers of $\Lambda$.  Coefficients $a_0 = 61$, $a_2 \approx 21.985$, $a_4 \approx 87.201$ at the APF parameters.  \emph{Derived:} \S\ref{sec:specaction}.  \emph{Produces:} cosmological constant ($a_0$), Einstein--Hilbert gravity ($a_2$), Yang--Mills kinetic term and Higgs potential ($a_4$).  This is how the Standard Model Lagrangian is \emph{read off} the APF partition function rather than postulated.
+\end{description}
+
+\noindent The Technical Supplement makes the comparison to Stinespring--Choi--GKSL, Connes--Marcolli noncommutative geometry, and Lovelock/Coleman--Mandula/HKM/Malament internalization results explicit, and flags three additional hypotheses (H1 spectral-triple ansatz, H2 Lipschitz cost regularity, H3 HKM future-distinguishing causal order) at point of use.
+\end{tcolorbox}
+
+\section{Primitive Objects and Axioms}\label{sec:primitives}
+
+\subsection{Distinctions, Interfaces, Capacity}
+\begin{definition}[Distinction]
+A distinction $d$ is an element of a set $D$ representing a claim that two alternatives are non-identical.
+\end{definition}
+
+\begin{definition}[Interface]
+An interface $\Gamma$ is a locus at which enforcement is evaluated.
+\end{definition}
+
+\begin{definition}[Finite capacity]
+Each interface $i$ carries finite capacity: $0 < C_i < \infty$ (Axiom A1).
+\end{definition}
+
+\subsection{Enforcement Demand and Cost}
+Each distinction $d$ imposes demand $\delta_i(d) \ge 0$ at interface $i$.  A set $S$ of distinctions is admissible at interface $i$ if $\sum_{d \in S} \delta_i(d) \le C_i$.  The enforcement cost vector $\delta(d) = (\delta_1(d), \ldots, \delta_n(d))$ captures the multi-interface demand profile.
+
+\subsection{Connection to $T_\varepsilon$: the MD component of PLEC}\label{subsec:Teps}
+The abstract condition of uniform finite distinguishability --- $\|\delta(d)\|_1 \ge \varepsilon > 0$ for every admissible $d$ --- is formally identified with the \emph{minimum cost floor} (MD) component of PLEC, and quantitatively with the proved theorem $T_\varepsilon$ of Paper~3 (\S 3.3).  $T_\varepsilon$ derives from A1 together with meaning-equals-robustness that $\mathrm{cost}(O) = 0$ or $\mathrm{cost}(O) \ge \varepsilon$.  If infinitesimal commitments were permitted, finite capacity $C$ could support unbounded distinctions, destroying A1's physical content.  The abstract $\varepsilon$ of this paper and the proved $\varepsilon$ of $T_\varepsilon$ are the same quantity; both are the MD component of PLEC.
+\coderef{check\_T\_eps}{core.py}
+
+\section{Admissible Paths and Accumulated Cost}\label{sec:paths}
+An admissible path is a parameterised family $P = \{S_\lambda\}_{\lambda \in [0,1]}$ of admissible distinction sets.  The accumulated cost (action) of $P$ is defined via total variation:
+\[
+A(P) \;=\; \sum_i \mathrm{Var}_\lambda\!\left[\textstyle\sum_{d \in S_\lambda} \delta_i(d)\right].
+\]
+This tracks how much enforcement load changes along the path, summed over all interfaces.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\textwidth]{Fig_Admissible_States_Diagram.pdf}
+\caption{\textbf{What an admissible path actually is.} The upper bulb is
+the admissible class $\mathcal{A}_\Gamma$ (the bounded region in
+correlation-capacity space carved out by A1 and MD). An admissible path
+$P = \{S_\lambda\}$ is a continuous trajectory through this volume: at
+each step, the configuration $S_\lambda$ stays inside the boundary
+(failure to do so is the case the flanking ``Not Admissible'' regions
+warn against). The downward arrow labeled ``time'' is exactly the
+direction along which the accumulated cost
+$A(P) = \sum_i \mathrm{Var}_\lambda[\cdots]$ of \S\ref{sec:paths} is
+measured: the action functional in this paper is the integral of
+enforcement-load change along the trajectory shown. The narrowing near
+the bottom is where the Minimum Action Theorem
+(\S\ref{sec:mintheorem}) becomes load-bearing: any record-forming path
+must commit at least $\varepsilon$ of accumulated cost, ruling out
+infinitesimal actions and isolating zero from the action spectrum. The
+locking interface and three downstream tubes visualize the $k!$ history
+sectors of \S\ref{sec:krecord} (formalized in
+\coderef{check\_T9}{gauge.py}); the irreversibility of the lock is the
+$L_{\mathrm{irr}}$ mechanism of \coderef{check\_L\_irr}{core.py} —
+locally unrecoverable correlation, not infinite reverse cost. The
+``volume / area'' note at the bottom is the Bekenstein-area structure
+that the Technical Supplement uses to identify the Connes spectral
+action with the APF partition function: entropy on a slice scales with
+interface area, not bulk volume.}
+\label{fig:admissible-paths}
+\end{figure}
+
+Figure~\ref{fig:admissible-paths} is the visual that the rest of Part~I
+makes formal: a record (\S\ref{sec:records}) is a persistent point in
+the locked subspace; the Minimum Action Theorem
+(\S\ref{sec:mintheorem}) puts a positive floor on the cost of moving
+through the narrowing; the $k!$ history sectors (\S\ref{sec:krecord})
+are the three tubes after locking. The diagram is the static picture;
+this paper supplies its dynamics.
+
+\section{Records and Irreversibility}\label{sec:records}
+
+\subsection{Definition of Record}
+\begin{definition}[Record]
+A distinction $d$ is a record at admissible set $S$ if (i) $d \in S$ (currently enforced) and (ii) there is no admissible path from $S$ to $S \setminus \{d\}$ (cannot be removed without violating admissibility).  Records are persistent enforcement commitments.
+\end{definition}
+
+\subsection{Executable Verification: T0.4$'$ Certificate}
+A machine-checkable proof that records exist is provided by the T0.4$'$ BFS certificate of Paper~2 (Appendix).  It operates on the canonical witness world $W = (\{a, b, c, h, r\}, \Gamma_1, \Gamma_2)$.  Removing record $r$ requires handoff token $h$, but $E(r) + E(h) = 2 + 9 = 11 > 10 = C_{\Gamma_1}$.  Every attempted removal passes through an inadmissible state.  The BFS exhaustively verifies: no admissible path from $S$ to $S \setminus \{r\}$ exists.  Record $r$ is operationally irreversible --- by capacity constraint, not by fiat.
+\coderef{check\_T0\_4\_prime\_BFS}{paper1.py}
+
+\section{The Minimum Action Theorem}\label{sec:mintheorem}
+
+\subsection{Lemma: Cost of Introducing a Distinction}
+\begin{lemma}\label{lem:minL}
+Let $P = \{S_\lambda\}$ be an admissible path.  Suppose $d$ is absent from $S_{\lambda^-}$ and present in $S_{\lambda^+}$, and $d$ is independent of $S_{\lambda^-}$.  Then $A(P) \ge \|\delta(d)\|_1 \ge \varepsilon$.
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+For each interface $i$, the function $f_{i,d}(\lambda) = \mathbf{1}_{d \in S_\lambda} \cdot \delta_i(d)$ changes from $0$ to $\delta_i(d)$ over $[\lambda^-, \lambda^+]$, so $\mathrm{Var}_\lambda[f_{i,d}] \ge \delta_i(d)$.  Summing: $A(P) \ge \sum_i \delta_i(d) = \|\delta(d)\|_1 \ge \varepsilon$ by $T_\varepsilon$.  Full proof in Technical Supplement~\S S.1.
+\end{proof}
+
+\subsection{Main Theorem: Isolation of Zero}
+\begin{theorem}[Isolation of Zero Action, $\epitag{P}$]\label{thm:isolation}
+Assume A1 (finite admissibility) and MD (uniform finite distinguishability, $= T_\varepsilon$).  Let $\mathcal{S} = \{A(P) : P \text{ is a record-forming admissible path}\}$.  Then $\inf \mathcal{S} \ge \varepsilon > 0$; zero is isolated from $\mathcal{S}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Any record-forming path introduces at least one independent distinction $d$ that becomes a record.  By Lemma~\ref{lem:minL}, $A(P) \ge \varepsilon > 0$.  Therefore every element of $\mathcal{S}$ is at least $\varepsilon$.  Zero is isolated.
+\end{proof}
+
+\subsection{What the Theorem Does NOT Say}
+\begin{enumerate}
+\item Not all paths have minimum cost --- reversible reallocations may have $A = 0$.
+\item Action is not discrete --- values above $\varepsilon$ form a continuum.
+\item The bound is not necessarily tight --- $\inf \mathcal{S}$ may exceed $\varepsilon$.
+\item The numerical value is not determined --- $\varepsilon$ depends on physical realization.
+\end{enumerate}
+
+\section{Multiple Records and k! History Sectors}\label{sec:krecord}
+
+\subsection{The n-Record Bound}
+\begin{proposition}\label{prop:nrec}
+If a path introduces $n$ independent records, then $A(P) \ge n \cdot \varepsilon$.
+\end{proposition}
+
+Each independent record contributes at least $\varepsilon$ by Lemma~\ref{lem:minL}; the contributions sum by path additivity.
+
+\subsection{Connection to k! History Counting (T9)}
+Paper~5, \S 7.3, establishes that $k$ record-locking enforcement operations applied in all $k!$ orderings yield $k!$ orthogonal record sectors.  Combining with Proposition~\ref{prop:nrec}: the total action cost of creating $k!$ distinguishable histories is $A \ge k \cdot \varepsilon$.  The entropy contribution is $\Delta S_{\mathrm{records}} \ge \log(k!) \sim k \log k$.  This connects the action minimum to the entropy accounting of Paper~3: each $\varepsilon$ of action invested creates one record, and the factorial growth of distinguishable histories ($k!$) comes from the combinatorics of irreversible ordering.
+\coderef{check\_T9}{core.py}
+
+% =====================================================================
+\section*{Part II — The APF Partition Function and the Regime of Validity}
+\addcontentsline{toc}{section}{Part II — The APF Partition Function and the Regime of Validity}
+% =====================================================================
+
+\section{The Non-Interacting APF Partition Function}\label{sec:partfn}
+
+\subsection{Derivation from the binomial identity}
+APF's feasible configurations at an interface are subsets of $C_{\mathrm{total}} = 61$ candidate capacity types, each contributing cost $\varepsilon^*$ if included.  At the non-interacting level (ignoring the interference surplus $\Delta$ from $L_{\mathrm{nc}}$), the Gibbs partition function over the admissible set is:
+\[
+Z_0(\beta) \;=\; \sum_{\text{admissible}} e^{-\beta \cdot \text{cost}} \;=\; \sum_{k=0}^{C_{\mathrm{total}}} \binom{C_{\mathrm{total}}}{k} e^{-\beta k \varepsilon^*}
+\;=\; \left(1 + e^{-\beta \varepsilon^*}\right)^{C_{\mathrm{total}}}.
+\]
+The last equality is the binomial identity.  This is an elementary calculation.  What is notable is its shape: the APF partition function is exactly the partition function of $C_{\mathrm{total}}$ non-interacting fermionic modes with single-particle energy $\varepsilon^*$.
+
+\subsection{The $d_{\mathrm{eff}}$ generalisation}
+$L_{\mathrm{self\_exclusion}}$ forces $d_{\mathrm{eff}} = 102$ internal states per mode.  The partition function generalises to
+\[
+Z_0(\beta) \;=\; \left(1 + d_{\mathrm{eff}} \, e^{-\beta \varepsilon^*}\right)^{C_{\mathrm{total}}},
+\]
+which is the Potts-like multi-level occupation analogue.  At $d_{\mathrm{eff}} = 1$ this reduces to Fermi--Dirac form; at $d_{\mathrm{eff}} = 102$ it supports the saturation entropy $S_{\mathrm{dS}} = C_{\mathrm{total}} \log d_{\mathrm{eff}} = 61 \log 102 \approx 282.12$ nats.
+\coderef{check\_L\_self\_exclusion}{gravity.py}
+
+\subsection{Observation on the fermionic-substrate question}
+The non-interacting partition function has the same mathematical form as fermionic occupation.  The 45 Weyl fermions of the SM matter content sit naturally on the 19 ``matter'' modes of the $42 + 19 = 61$ partition, and the 42 ``vacuum'' modes correspond to unoccupied states.  The structural coincidence is suggestive --- fermionic SM matter content is consistent with an underlying binary-distinction substrate --- but we are careful not to claim a new derivation from the partition-function reading alone.  $T_{\mathrm{field}}$ derives the 45 Weyl fermions through the independent gauge/Lorentz representation-theory chain; the partition-function observation is a structural consistency check, not a replacement derivation.  We keep this as an observation.
+
+\section{Gapped Ground State: APF's Regime of Validity}\label{sec:validity}
+
+\subsection{Physical interpretation of $\beta$}
+$\beta$ in the APF partition function has a clean physical interpretation: inverse thermal temperature in units of $1/\varepsilon^*$.  The APF operational regime is $\beta \varepsilon^* \gg 1$, equivalently
+\[
+kT \;\ll\; \varepsilon^*.
+\]
+Identifying $\varepsilon^*$ with a Planck-scale energy (the natural scale for gravitational physics; see $L_{\mathrm{cost}}$), the condition $kT \ll \varepsilon^*$ translates numerically as follows.
+
+\subsection{The observable universe margin}
+For the observable universe at $kT \sim 2.7$ K $\sim 10^{-4}$ eV and $\varepsilon^* \sim E_P \sim 10^{28}$ eV:
+\[
+\beta \varepsilon^* \;\sim\; 10^{32}.
+\]
+APF's ground-state approximation is valid with enormous margin.  APF breaks down precisely when $kT \sim \varepsilon^*$, which at Planck scale means $T \sim 10^{32}$ K, corresponding to the first Planck time after the Big Bang.  This is exactly the regime where quantum gravity is expected to become essential.
+
+\subsection{Consistency with $L_{\mathrm{singularity\_resolution}}$}
+The framework's own $L_{\mathrm{singularity\_resolution}}$ theorem is consistent with this scope: APF begins at $k = 1$ (minimum de Sitter patch), not at $k = 0$, because the singularity would be in APF's breakdown regime.  The partition-function picture and the singularity-resolution picture are two views of the same APF--QG boundary.
+\coderef{check\_L\_singularity\_resolution}{cosmology.py}
+
+\subsection{Scope claim, sharpened}
+APF is the ground-state approximation that holds throughout the observable universe and fails only at the Planck era.  This is not an aspirational universalism but a precise statement of where the framework applies.  It is also a falsifiable prediction: any observable phenomenon where APF fails outside this window would falsify the ground-state-approximation scope claim.
+
+\section{Saturation Factorisation and the Ledger-Accounting Bridge}\label{sec:satfact}
+
+\subsection{The factorisation}
+At saturation ($k = C_{\mathrm{total}} = 61$, the structurally realised APF configuration), the partition function restricts to the single configuration with all modes occupied.  Introducing the interaction corrections $\eta(i,j)$ from $L_{\mathrm{nc}}$ superadditivity, the saturation partition function factorizes:
+\[
+Z_{\mathrm{sat}}(\beta, \eta) \;=\; N_{\mathrm{micro}} \cdot \exp\!\bigl(-\beta E_{\mathrm{sat}}(\eta)\bigr),
+\]
+with
+\[
+N_{\mathrm{micro}} = d_{\mathrm{eff}}^{C_{\mathrm{total}}}, \qquad E_{\mathrm{sat}}(\eta) = C_{\mathrm{total}} \varepsilon^* + \sum_{i < j} \eta(i,j).
+\]
+$N_{\mathrm{micro}}$ is a pure count --- $\beta$- and $\eta$-independent.  $E_{\mathrm{sat}}(\eta)$ is an energy shift that absorbs the interaction corrections additively.
+
+\subsection{Consequence: saturation entropy is a count}
+The saturation entropy
+\[
+S_{\mathrm{dS}} \;=\; \log N_{\mathrm{micro}} \;=\; C_{\mathrm{total}} \log d_{\mathrm{eff}} \;=\; 61 \log 102 \;\approx\; 282.12 \text{ nats}
+\]
+inherits independence from both $\beta$ and the interaction corrections $\eta$.  Counts do not depend on energy scales, and conditioning on a single mode configuration leaves only the internal $d_{\mathrm{eff}}$ multiplicity as the variable degree of freedom.  We state this consequence as a single sentence rather than as a named theorem, because it is an immediate algebraic consequence of the factorisation rather than an independent mathematical result.
+\coderef{check\_T\_deSitter\_entropy}{gravity.py}
+
+\subsection{The bridge to Paper 3 v3.0's ledger-accounting principle}
+Paper~3 v3.0, \S 5 (ledger-accounting principle) establishes that entropy is a count of admissible configurations and that this count is robust under cost-landscape corrections.  It forward-references Paper~7 for the thermodynamic formalism.  The $Z_{\mathrm{sat}}$ factorisation is that formalism.  The robustness of entropy under thermal and interaction corrections is the factorisation made explicit: corrections shift energies without changing multiplicities.  The bridge is cleanly two-way: Paper~3 states the principle qualitatively; this paper backs it quantitatively.
+
+\subsection{Status of $\Lambda \cdot G$}
+The holographic identity gives
+\[
+\Lambda \cdot G \;=\; 3\pi \cdot e^{-S_{\mathrm{dS}}} \;=\; 3\pi / 102^{61}.
+\]
+Each factor in the count --- $C_{\mathrm{total}} = 61$, $d_{\mathrm{eff}} = 102$ --- is itself structurally forced ($L_{\mathrm{count}}$, $L_{\mathrm{self\_exclusion}}$).  $\Lambda \cdot G$ is therefore forced by counting, not tuned by any free parameter.  We resist the framing ``exact, not approximate,'' which invites a corrections-dissection attack; the accurate framing is that $\Lambda \cdot G$ is an elementary count of structurally-forced integers.
+
+% =====================================================================
+\section*{Part III — Internalization: the Lagrangian is Derived, Not Written Down}
+\addcontentsline{toc}{section}{Part III — Internalization: the Lagrangian is Derived}
+% =====================================================================
+
+\section{Spectral Action Equals APF Partition Function}\label{sec:specaction}
+This is the structural pivot of the paper.
+
+\begin{theorem}[Spectral action = APF partition function, $L_{\mathrm{spectral\_action\_internal}}$, $\epitag{P}$]\label{thm:specaction}
+The Connes spectral action $S_f = \mathrm{Tr}[f(D_F/\Lambda)]$ on the APF spectral triple is identical to the APF partition function $Z(\beta) = \mathrm{Tr}[e^{-\beta H}]$ from $L_{\mathrm{quantum\_evolution}}$, evaluated at $\beta = 1/\Lambda^2$ with the Boltzmann cutoff $f(x) = e^{-x}$.
+\end{theorem}
+
+\begin{proof}[Four-step derivation]
+\textbf{Step 1 (partition function = heat kernel).}  $Z(\beta) = \mathrm{Tr}[e^{-\beta H}]$ on $\mathcal{H} = (\mathbb{C}^2)^{\otimes 61}$ with the capacity Hamiltonian $H = -\varepsilon^* \sum_i n_i$.  The finite Dirac operator $D_F$ from $L_{\mathrm{ST\_Dirac}}$ satisfies $D_F^2 = M_Y^\dagger M_Y$ (Yukawa matrix squared).  The heat kernel $K(t) = \mathrm{Tr}[e^{-t D_F^2}] = \sum_i e^{-t \lambda_i^2}$ is a finite sum over eigenvalues (no UV divergence).
+
+\textbf{Step 2 (spectral action = Laplace transform of heat kernel).}  For any admissible cutoff function $f$,
+\[
+S_f \;=\; \mathrm{Tr}\bigl[f(D_F^2/\Lambda^2)\bigr] \;=\; \int_0^\infty \tilde{f}(t/\Lambda^2) \, K(t) \, \frac{dt}{t},
+\]
+where $\tilde{f}$ is the Laplace--Mellin transform of $f$.  For $f(x) = e^{-x}$, $S_f = K(1/\Lambda^2) = Z(1/\Lambda^2)$.  The spectral action is exactly the APF partition function at $\beta = 1/\Lambda^2$.
+
+\textbf{Step 3 (heat-kernel expansion = physics).}  The small-$t$ (high-$\Lambda$) asymptotic expansion is
+\[
+K(t) \;=\; a_0 - t \cdot a_2 + \frac{t^2}{2} \cdot a_4 + O(t^3),
+\]
+with APF-computed coefficients
+\[
+a_0 = \dim(\mathcal{H}_F) = 96, \qquad a_2 = \mathrm{Tr}(D_F^2) = 21.985, \qquad a_4 = \mathrm{Tr}(D_F^4) = 87.201.
+\]
+In curved spacetime, these multiply the geometric Seeley--DeWitt coefficients to give:
+\begin{itemize}
+\item $f_4 \Lambda^4 \, a_0 \;\to\;$ cosmological constant.
+\item $f_2 \Lambda^2 \, a_2 \;\to\;$ Einstein--Hilbert action (gravity).
+\item $f_0 \, a_4 \;\to\;$ gauge kinetic terms + Higgs potential.
+\end{itemize}
+
+\textbf{Step 4 (uniqueness).}  The spectral action is the unique action satisfying: (a)~spectral invariance --- depends only on eigenvalues of $D$ (the APF cost metric, $L_{\mathrm{loc}}$); (b)~gauge invariance --- invariant under $A \to U A U^\dagger$ (the APF gauge group, $T_{\mathrm{gauge}}$); (c)~positivity --- $S > 0$ for $f > 0$ (the APF Boltzmann weight, positivity of $e^{-\beta H}$).  Full proof in Technical Supplement \S S.3.
+\end{proof}
+
+\coderef{check\_L\_spectral\_action\_internal}{internalization.py}
+
+\subsection{What this identity means}
+Once the APF partition function is accepted, the SM Lagrangian plus gravity is not written down --- it is read off.  The Lagrangian is the heat-kernel expansion of the admissibility partition function.  Six historical external inputs --- Connes--Lott (1991), Chamseddine--Connes--Marcolli (2007), Chamseddine--Connes (2012), and three related references --- which were previously logical dependencies of the Lagrangian derivation in prior spectral-action approaches, become \emph{attributions} rather than \emph{imports}.  They credit the notation and framework; the theorem content is APF-internal.
+
+\subsection{The A2 component of PLEC in the uniqueness argument}
+Step~4 of the derivation is where PLEC's A2 component (argmin selection) does its work.  The spectral action is not one action among many; it is the \emph{unique} action satisfying the three structural conditions.  PLEC selects it.  Internalising the Lagrangian is internalising the variational structure of PLEC itself.
+
+\section{Scalar-Potential Internalization}\label{sec:scalarpot}
+
+\subsection{The $\tfrac{1}{2}$ coefficient from KO-dimension 6}
+Previous spectral-action approaches had to import the factor of $\tfrac{1}{2}$ on $\mathrm{Tr}(\kappa^\dagger \kappa)$ in the fermion-bilinear part of the action from Chamseddine--Connes.  $L_{\mathrm{normalization\_coefficient}}$ derives this coefficient.
+
+\begin{lemma}[$L_{\mathrm{normalization\_coefficient}}$, $\epitag{P}$]
+The factor of $\tfrac{1}{2}$ on $\mathrm{Tr}(\kappa^\dagger \kappa)$ follows from the KO-dimension 6 of the APF spectral triple.  The real structure $J$ satisfies $J^2 = -I$ (from $L_{\mathrm{ST\_Dirac}}$ and $T_{\mathrm{CPT}}$), which halves the naive trace because of the antisymmetry between a state and its $J$-partner.
+\end{lemma}
+
+\coderef{check\_L\_normalization\_coefficient}{internalization.py}
+
+Full proof in Technical Supplement \S S.3.2.  The point is that the $\tfrac{1}{2}$ is not a convention; it is forced by the APF real structure (CPT).
+
+\subsection{The scalar potential form from spectral invariance + A1}
+\begin{lemma}[$L_{\mathrm{scalar\_potential\_form}}$, $\epitag{P}$]
+The specific quartic form of $V(H, \sigma)$ in the scalar sector --- the combination of mass terms, quartic self-coupling, and Higgs--singlet coupling that appears in the Higgs potential --- is derived from (i)~spectral invariance (the action depends only on eigenvalues of $D_F$) plus (ii)~A1 (finite capacity bounds the polynomial degree; higher-than-quartic terms require unbounded energies and violate A1).
+\end{lemma}
+
+\coderef{check\_L\_scalar\_potential\_form}{internalization.py}
+
+The Higgs potential form is not postulated.  A spectrally-invariant, A1-bounded polynomial in the scalar sector can only be the specific quartic form that appears in the SM.  Together with $L_{\mathrm{normalization\_coefficient}}$, these two results upgrade $L_{\mathrm{sigma\_VEV}}$ from $\epitag{P\_structural}$ to $\epitag{P}$: the Higgs VEV is derived, not merely structurally necessary.
+
+\section{The Enforcement Potential $V(\Phi)$ and the Mass Gap}\label{sec:V}
+
+\subsection{Form of the potential}
+Paper~3, \S 5.3, derives the enforcement cost functional
+\[
+V(\Phi) \;=\; \varepsilon \Phi - \frac{\eta}{2\varepsilon} \Phi^2 + \frac{\varepsilon \Phi^2}{2(C - \Phi)}.
+\]
+$V$ has a binding well at $\Phi/C \approx 0.81$ with mass gap $d^2 V/d\Phi^2 = 7.33 > 0$.
+\coderef{check\_L\_V\_enforcement}{core.py}
+
+\subsection{Mass gap and quantum modes}
+The mass gap $d^2 V / d\Phi^2 > 0$ implies stable excitations around the binding well.  Paper~5 shows no classical solitons localise in the APF Hilbert-space structure, so the excitations are quantum modes.  The minimum action $\varepsilon$ from Theorem~\ref{thm:isolation} sets the scale at which these modes become meaningful: excitations with $S \sim \varepsilon$ exhibit quantum interference; $S \gg \varepsilon$ is classical.
+
+\subsection{Connection to the spectral-action reading}
+Under the spectral-action identity (Theorem~\ref{thm:specaction}), $V(\Phi)$ is part of the Seeley--DeWitt $a_4$ coefficient.  This connects the microscopic enforcement-potential story of Paper~3 with the macroscopic Lagrangian story of this paper.  The enforcement potential is the field-theory realisation of the action bound --- not a separate mechanism but the same structure at different scales.
+
+% =====================================================================
+\section*{Part IV — Geometric Internalization: Spacetime is Forced}
+\addcontentsline{toc}{section}{Part IV — Geometric Internalization: Spacetime is Forced}
+% =====================================================================
+
+\section{Continuum Limit from Finite Capacity and Marginalization}\label{sec:continuum}
+
+\begin{lemma}[$L_{\mathrm{kolmogorov\_internal}}$, $\epitag{P}$]
+The continuum limit of the enforcement lattice exists and is unique, derived entirely from A1 (finite capacity) and the marginalisation consistency condition R3.
+\end{lemma}
+
+\coderef{check\_L\_kolmogorov\_internal}{internalization\_geo.py}
+
+\subsubsection*{Sketch}
+A1 bounds enforcement capacity finitely in any region; any finite region contains finitely many enforcement events.  At resolution $\varepsilon$, the lattice has $N(\varepsilon) \sim (L/\varepsilon)^d$ sites with $d = 4$ (from $T_8$).  $\Delta_{\mathrm{ordering}}$ derives R3: for any two resolutions $\varepsilon_1 > \varepsilon_2$, the coarse distribution is the marginal of the fine distribution.  This is the Kolmogorov consistency condition; the Kolmogorov extension theorem (1933) then guarantees a unique continuum-limit measure.  $L_{\mathrm{kolmogorov\_internal}}$ proves the extension's content without citing Kolmogorov --- the continuum measure is constructed internally by exhausting subsets at each resolution.  Full proof in Technical Supplement \S S.4.1.
+
+\section{Smooth Atlas from Lipschitz Cost}\label{sec:atlas}
+
+\begin{lemma}[$L_{\mathrm{chartability}}$, $\epitag{P}$]
+The continuum enforcement space admits a smooth ($C^\infty$) atlas, making it a smooth manifold.
+\end{lemma}
+
+\coderef{check\_L\_chartability}{internalization\_geo.py}
+
+\subsubsection*{Sketch}
+The enforcement cost is a metric (identity, symmetry from time reversal, triangle inequality from $L_{\mathrm{cost}}$, non-degeneracy from A1).  A1 bounds diameter at $C_{\mathrm{total}} \cdot \varepsilon^*$.  The Finite Boundary Condition $\Delta_{\mathrm{fbc}}$ gives a uniform Lipschitz bound on the enforcement field; combined with elliptic regularity of the Euler--Lagrange equation for the enforcement action, Schauder estimates bootstrap $C^{0,1} \to C^{1,\alpha} \to C^\infty$.  Nash--Kuiper and Palais manifold theorems are not imported; the atlas is constructed internally from the APF metric and the enforcement PDE.  Full proof in Technical Supplement \S S.4.2.
+
+\section{Einstein Equations: Uniqueness in $d=4$}\label{sec:einstein}
+
+\begin{lemma}[$L_{\mathrm{lovelock\_internal}}$, $\epitag{P}$]
+In $d = 4$, the gravitational field equation $G_{\mu\nu} + \Lambda g_{\mu\nu} = \kappa T_{\mu\nu}$ is the unique response law satisfying the admissibility conditions A9.1--A9.5.
+\end{lemma}
+
+\coderef{check\_L\_lovelock\_internal}{internalization\_geo.py}
+
+\subsubsection*{Sketch}
+The five conditions A9.1--A9.5 are each APF-derived: (A9.1)~locality from $L_{\mathrm{loc}}$; (A9.2)~symmetry from the polarisation identity ($T_{7B}$); (A9.3)~divergence-free from Noether applied to diffeomorphism invariance (contracted Bianchi is a mathematical identity); (A9.4)~second-order from A1 (finite capacity $\Rightarrow$ bounded cost $\Rightarrow$ field equation at most second-order in metric derivatives); (A9.5)~correct Newtonian limit from $\nabla^2 \Phi = 4\pi G \rho$.
+
+Any symmetric, divergence-free, second-order tensor built from $g_{\mu\nu}$ and its first two derivatives in $d = 4$ is a linear combination of $g_{\mu\nu}$, $R_{\mu\nu}$, and $R g_{\mu\nu}$ (by index counting).  The combination is forced: $G_{\mu\nu} + \Lambda g_{\mu\nu}$.  Lovelock's 1971 theorem is reproduced; the proof is APF-internal.  Full proof in Technical Supplement \S S.4.3.
+
+\section{Direct-Product Symmetry Structure}\label{sec:directproduct}
+
+\begin{lemma}[$L_{\mathrm{coleman\_mandula\_internal}}$, $\epitag{P}$]
+The full symmetry group of the framework factorizes as $G = \mathrm{Poincar\acute{e}} \times G_{\mathrm{gauge}}$.
+\end{lemma}
+
+\coderef{check\_L\_coleman\_mandula\_internal}{internalization\_geo.py}
+
+\subsubsection*{Sketch}
+Two independent derivation chains share only A1: \emph{Chain A} (spacetime: A1 $\to$ $L_{\mathrm{irr}}$ $\to$ $\Delta_{\mathrm{ordering}}$ $\to$ continuum $\to$ signature $\to$ $T_8$ $\to$ $T_{9,\mathrm{grav}}$) uses irreversibility and causal order; \emph{Chain B} (gauge: A1 $\to$ $L_{\mathrm{loc}}$ $\to$ $T_3$ $\to$ $T_{\mathrm{gauge}}$) uses locality and superselection.  Locality requires $[G_S(x), G_I(y)] = 0$ for spacelike-separated points.  Combined, this forces $G$ to be a direct product.  Coleman--Mandula (1967) and Haag--{\L}opuszański--Sohnius (1975) are reproduced; the proof is APF-internal.  Full proof in Technical Supplement \S S.4.4.
+
+\section{Causal Order Determines the Lorentzian Metric}\label{sec:causalorder}
+
+\begin{lemma}[$L_{\mathrm{HKM\_causal\_geometry}}$, $\epitag{P}$]
+The partial order $\preceq$ on events from $L_{\mathrm{irr}}$ uniquely determines the conformal class of the Lorentzian metric $[g_{\mu\nu}]$.
+\end{lemma}
+
+\begin{lemma}[$L_{\mathrm{Malament\_uniqueness}}$, $\epitag{P}$]
+Causal order plus A1's volume normalization uniquely determines the full metric $g_{\mu\nu}$.
+\end{lemma}
+
+\coderef{check\_L\_HKM\_causal\_geometry,~check\_L\_Malament\_uniqueness}{extensions.py}
+
+\subsubsection*{Sketch}
+$L_{\mathrm{irr}}$ gives a strict partial order on events satisfying transitivity, irreflexivity, and denseness.  Causal cones at each point coincide with null cones; the tangent structure forced by mapping null vectors to null vectors is conformal.  HKM (1976) then gives $[g_{\mu\nu}]$.  Malament (1977) shows a causal isomorphism is a conformal isometry: $f^* g_2 = \Omega^2 g_1$.  A1 provides a volume measure (the capacity budget normalised over the continuum manifold), which fixes $\Omega^2$.  The full metric is determined.  Paper~6 will provide a dynamical treatment; the self-contained version here makes Paper~7's Lagrangian derivation independent of forward references.  Full proofs in Technical Supplement \S S.4.5.
+
+% =====================================================================
+\section*{Part V — The Standard Model Lagrangian and Extensions}
+\addcontentsline{toc}{section}{Part V — The Standard Model Lagrangian and Extensions}
+% =====================================================================
+
+\section{One-Loop Renormalization-Group Flow}\label{sec:rg}
+
+\begin{theorem}[$T_{6B,\mathrm{beta\_one\_loop}}$, $\epitag{P}$]
+The one-loop beta coefficients for the SM gauge couplings, top Yukawa, and Higgs quartic self-coupling are derived by Casimir/Dynkin arithmetic applied to the APF-derived particle content $T_{\mathrm{field}}$ and $T_{\mathrm{gauge}}$, with $N_{\mathrm{gen}} = 3$ from $T_7$.
+\end{theorem}
+
+\coderef{check\_T6B\_beta\_one\_loop}{extensions.py}
+
+\subsubsection*{Content}
+The one-loop formula $\beta(g_i) = -b_i g_i^3 / (16\pi^2)$ has $b_i$ depending only on gauge-group Casimirs, Dynkin indices of matter representations, and $N_{\mathrm{gen}}$.  Plugging the APF-derived SM content per generation --- $Q_L$, $u_R$, $d_R$, $L_L$, $e_R$, $H$ --- into the general formula
+\[
+b_{SU(N)} \;=\; (11/3) C_2(\mathrm{adj}) - (2/3) \textstyle\sum_f T(R_f) - (1/3) \sum_s T(R_s)
+\]
+yields the standard SM values $b_1 = 41/10$, $b_2 = -19/6$, $b_3 = -7$.  The beta functions are not imported; they are arithmetic consequences of the APF-derived spectrum.  Full derivation in Technical Supplement \S S.5.1.
+
+\section{Neutrino Sector and the Type-I Seesaw}\label{sec:seesaw}
+
+\begin{lemma}[$L_{\mathrm{seesaw\_type\_I}}$, $\epitag{P}$]
+The APF-derived Dirac operator $D_F$ with the Majorana block (from $L_{\mathrm{nuR\_enforcement}}$) yields the type-I seesaw mass formula $m_\nu = -M_D M_R^{-1} M_D^T$.
+\end{lemma}
+
+\coderef{check\_L\_seesaw\_type\_I}{extensions.py}
+
+\subsubsection*{Content}
+The 6$\times$6 neutral-fermion mass matrix in the $(\nu_L, \nu_R)$ basis is
+\[
+M_{\mathrm{neutral}} \;=\; \begin{pmatrix} 0 & M_D \\ M_D^T & M_R \end{pmatrix},
+\]
+with $M_D$ (Dirac) 3$\times$3 and $M_R$ (Majorana) 3$\times$3 symmetric.  For $M_R \gg M_D$ (hierarchy from $L_{\mathrm{dm2\_hierarchy}}$), perturbative block diagonalization yields $m_{\mathrm{light}} = -M_D M_R^{-1} M_D^T$ and $m_{\mathrm{heavy}} \approx M_R$.  Light neutrino masses scale as $m_D^2 / M_R$.  Full five-step derivation in Technical Supplement \S S.5.2.
+
+\section{Spin-Statistics and Gauge-Group Recovery}\label{sec:spingauge}
+
+\subsection{Pauli--Jordan commutator symmetry}
+\begin{lemma}[$L_{\mathrm{Pauli\_Jordan}}$, $\epitag{P}$]
+The Pauli--Jordan commutator function satisfies the reflection symmetry required for causal propagation and spin-statistics.  Derived internally.
+\end{lemma}
+
+\coderef{check\_L\_Pauli\_Jordan}{extensions.py}
+
+\subsection{McKean--Singer index formula}
+\begin{lemma}[$L_{\mathrm{McKean\_Singer\_internal}}$, $\epitag{P}$]
+The McKean--Singer supertrace formula $\mathrm{Index}(D) = \mathrm{Tr}_s[e^{-t D^2}] = \mathrm{Tr}[e^{-t M^\dagger M}] - \mathrm{Tr}[e^{-t M M^\dagger}]$ is proved from pure linear algebra (SVD), eliminating the last external theorem import in the anomaly-cancellation chain.
+\end{lemma}
+
+\coderef{check\_L\_McKean\_Singer\_internal}{extensions.py}
+
+Full five-step proof (SVD decomposition, eigenvalue identity, supertrace cancellation, limit $t \to 0$, matching to APF index) in Technical Supplement \S S.5.3.
+
+\subsection{Gauge group recovery via Tannaka--Krein}
+\begin{lemma}[$L_{\mathrm{Tannaka\_Krein}}$, $\epitag{P}$]
+The APF-derived symmetric C$^*$-tensor category of localised superselection sectors satisfies the four Tannaka--Krein conditions.  The compact group $G = \mathrm{Aut}(\omega)$ recovered from the fiber functor $\omega$ is the SM gauge group $\SU(3) \times \SU(2) \times \U(1)$.
+\end{lemma}
+
+\coderef{check\_L\_Tannaka\_Krein}{extensions.py}
+
+\subsubsection*{Four Tannaka--Krein conditions from APF}
+\begin{itemize}
+\item[(TK1)] \emph{Monoidal:} $L_{\mathrm{loc}}$ provides a net of local algebras; composition of localised superselection sectors gives $\otimes$.
+\item[(TK2)] \emph{Symmetric $\epsilon^2 = 1$:} $T_{\mathrm{spin\_statistics}}$ with $d_{\mathrm{space}} = 3$ forces $\pi_1(\mathrm{Config}) = S_n$, so statistics phases satisfy $\kappa^2 = 1$ (no anyons in $d = 4$).
+\item[(TK3)] \emph{Conjugates:} CPT provides dual objects with unit and counit.
+\item[(TK4)] \emph{Fiber functor:} the vacuum sector provides $\omega : \mathcal{C} \to \mathrm{Vect}_\mathbb{C}$, monoidal by locality.
+\end{itemize}
+Doplicher--Roberts (1989) is reproduced; the proof is APF-internal.  This replaces the DR import in $T_3$.  Full proof in Technical Supplement \S S.5.4.
+
+\section{BSM Extensions: Mechanisms from APF Structure}\label{sec:bsm}
+Three BSM directions follow naturally from the internalized framework.  We name the mechanisms and relevant code references; we do not claim specific quantitative predictions.
+
+\subsection{Dark matter}
+The APF enforcement budget admits lightweight sterile states as cost-minimizers in unoccupied regions of capacity space.  $T_{12}$ in Paper~5 derives the existence and basic properties of such states.  Particle-level identification remains open; no specific mass or cross-section is predicted here.  The mechanism is: the capacity budget is not filled by SM matter alone; residual unoccupied capacity supports states that couple weakly (by $L_{\mathrm{loc}}$ restricted to the unoccupied sector) and evade direct detection.
+
+\subsection{Inflation}
+The pre-saturation regime ($k < C_{\mathrm{total}} = 61$) has the staged-relaxation structure developed in Paper~3 v3.0, \S (Cosmogenesis).  The enforcement-cost profile during staged constraint relaxation provides a natural early-time epoch compatible with inflationary phenomenology: constraint relaxation stages release capacity on scale-dependent timescales, producing a nearly-scale-invariant power spectrum with specific stage-dependent deviations.  Full dynamical treatment and comparison with CMB observations await Paper~6 and dedicated inflation-staircase work.
+
+\subsection{Matter--antimatter asymmetry}
+The irreversibility structure $L_{\mathrm{irr}}$ gives rise to two distinct CP-violation mechanisms: \emph{holonomy phases} in the CKM sector (derived in \texttt{generations.py}) and \emph{entropy-optimization phases} in the PMNS sector (derived in \texttt{session\_delta\_pmns.py}).  Both mechanisms derive from the same irreversibility principle.  Baryogenesis-level quantitative predictions require further work connecting these CP phases to the Sakharov conditions via sphaleron/electroweak dynamics.
+
+\section{Status of Planck's Constant}\label{sec:hbar}
+Planck's constant $\hbar$ is the empirical value of the structural minimum $\varepsilon$:
+\[
+\hbar \;=\; (\text{physical instantiation of } \varepsilon) \;\approx\; 1.055 \times 10^{-34} \text{ J}\cdot\text{s}.
+\]
+The framework explains why $\varepsilon > 0$ must exist (structural necessity from MD + A1) and why it is universal (applies to all records).  The framework does not explain the numerical value; this requires the specific capacity budget of our universe.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspect} & \textbf{Standard QM} & \textbf{This Paper} \\ \midrule
+$\hbar$ status & Postulate & Derived necessity (MD of PLEC) \\
+$\varepsilon$ value & $=\hbar$ & Empirical (capacity budget) \\
+Zero action & Excluded by $\hbar$ & Excluded by structure (Thm~\ref{thm:isolation}) \\
+Multiple records & $n\hbar$ (postulated) & $n\varepsilon$ (proved, Prop.~\ref{prop:nrec}) \\
+History counting & Not addressed & $k!$ sectors from $T_9$ \\
+Lagrangian form & Written down, symmetry-constrained & Spectral action $=$ partition function (Thm~\ref{thm:specaction}) \\
+Gauge group & Input & Tannaka--Krein recovery from superselection \\
+Gravity & Input (Einstein--Hilbert) & Derived (Seeley--DeWitt $a_2$ coefficient) \\
+Cosmological constant & Free parameter & Derived ($a_0$ coefficient; $3\pi/102^{61}$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{What Would Falsify This Result}\label{sec:falsify}
+
+\begin{enumerate}
+\item[F1] \emph{Zero-action record formation.}  Any record that forms at zero cost falsifies Theorem~\ref{thm:isolation}.  Not observed.
+\item[F2] \emph{Infinite capacity.}  Any interface supporting unbounded distinctions falsifies A1.  Not observed.
+\item[F3] \emph{Classical mechanics at all scales.}  Any regime where action is arbitrarily small falsifies the structural minimum.  Not observed; quantum regime is universal at $S \sim \varepsilon$.
+\item[F4] \emph{Spectral action $\neq$ partition function.}  Direct computation shows they are identical (Theorem~\ref{thm:specaction}).  A mismatch at any heat-kernel order would falsify the internalization.  No such mismatch at coefficient orders $a_0, a_2, a_4$.
+\item[F5] \emph{Geometric internalization failure.}  Any of the chains $L_{\mathrm{kolmogorov}} \to L_{\mathrm{chartability}} \to L_{\mathrm{lovelock}} \to L_{\mathrm{coleman\_mandula}}$ failing would force importation of external theorems, undermining the self-contained derivation.  Verified numerically via the code checks.
+\item[F6] \emph{APF outside its validity window.}  Any phenomenon where $kT \sim \varepsilon^*$ holds and APF still applies, or where $kT \ll \varepsilon^*$ holds and APF fails, would falsify the regime-of-validity statement of \S\ref{sec:validity}.  The Planck-era breakdown is consistent with the conventional expectation.
+\item[F7] \emph{BSM extensions.}  Specific observational outcomes --- direct detection of a dark-matter particle outside the sterile-state window; CMB inflation parameters incompatible with staged relaxation; baryogenesis quantification inconsistent with the two-mechanism CP structure --- would falsify specific BSM extensions.  These are flagged as open, not claimed.
+\end{enumerate}
+
+\section{Summary}\label{sec:summary}
+
+\subsection{The central result}
+Zero accumulated action is structurally inadmissible for record-forming transitions (Theorem~\ref{thm:isolation}).  The minimum $\varepsilon$ is the MD component of PLEC made quantitative.  The Standard Model Lagrangian with Einstein--Hilbert gravity is the Seeley--DeWitt heat-kernel expansion of the APF partition function (Theorem~\ref{thm:specaction}).  Spacetime is forced (Part~IV).  One-loop flow, neutrino masses, spin-statistics, and the gauge group follow arithmetically from the APF-derived spectrum (Part~V).
+
+\subsection{Physical implications}
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Implication} & \textbf{Explanation} & \textbf{Status} \\ \midrule
+Minimum action exists & $\varepsilon > 0$ structurally forced (MD of PLEC) & $\epitag{P}$ \\
+Classical mechanics fails at small $S$ & Assumes $S \to 0$ possible & $\epitag{P}$ \\
+QM is necessary near $\varepsilon$ & Effective description at threshold & \epitag{P\_structural} \\
+Measurements cost action & Record formation requires $\varepsilon$ & $\epitag{P}$ \\
+$n$ records cost $n \varepsilon$ & Independent records sum & $\epitag{P}$ \\
+$k!$ history sectors & From $T_9$ append maps & $\epitag{P}$ \\
+APF partition function is (generalised) Fermi--Dirac & Binomial identity over admissible subsets & $\epitag{P}$ \\
+APF valid for $kT \ll \varepsilon^*$ & Gapped ground state & $\epitag{P}$ \\
+Saturation entropy robust to corrections & $Z_{\mathrm{sat}}$ factorisation & $\epitag{P}$ \\
+Spectral action $=$ APF partition function & $L_{\mathrm{spectral\_action\_internal}}$ & $\epitag{P}$ \\
+SM Lagrangian from Seeley--DeWitt & Heat-kernel expansion & $\epitag{P}$ \\
+Einstein equations unique in $d=4$ & A9.1--A9.5 + index counting & $\epitag{P}$ \\
+$G = \mathrm{Poincar\acute{e}} \times G_{\mathrm{gauge}}$ & Independent chains + $L_{\mathrm{loc}}$ & $\epitag{P}$ \\
+Full metric from causal order + A1 & HKM + Malament internalized & $\epitag{P}$ \\
+One-loop beta coefficients & Casimir arithmetic & $\epitag{P}$ \\
+Type-I seesaw $m_\nu = -M_D M_R^{-1} M_D^T$ & Block diagonalization & $\epitag{P}$ \\
+Gauge group $\SU(3) \times \SU(2) \times \U(1)$ & Tannaka--Krein from superselection & $\epitag{P}$ \\
+$\hbar$ is empirical value of $\varepsilon$ & Numerical value from observation & Empirical \\
+BSM mechanisms present & Dark matter, inflation, baryogenesis outlines & \epitag{P\_structural} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Conceptual status}
+Quantization of action: derived, not discreteness, not quantum-specific, structurally necessary.  Lagrangian form: derived by spectral-action = partition-function identity, not written down.  Geometric structure: internalized, with no external theorem dependencies in the core chain.  The framework has internalized, in Paper~7 v2.0, the last external inputs of the derivation: all 11 external theorems used in prior spectral-action treatments are now APF-internal.  The remaining empirical inputs are the scale of $\varepsilon$ (Planck's constant), the value of $\sigma_0$ (Higgs VEV), and the top/bottom quark absolute-mass scales (Type~B anchors in $T_{\mathrm{m}}$).
+
+\subsection{Paper 3 v3.0 bridge}
+The saturation factorisation of \S\ref{sec:satfact} provides the thermodynamic formalism for Paper~3 v3.0's ledger-accounting principle.  The forward reference in Paper~3 v3.0 \S 5 is answered here: entropy-as-count is robust under cost-landscape corrections because $Z_{\mathrm{sat}}$ factorises into a pure count $N_{\mathrm{micro}}$ and an additive energy shift $E_{\mathrm{sat}}(\eta)$ that absorbs thermal and interaction corrections.
+
+% =====================================================================
+\appendix
+% =====================================================================
+
+\section{Framework Cost Parameters: $\varepsilon$, $\kappa$, $\eta$}\label{app:cost}
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Role in This Paper} & \textbf{Status} \\ \midrule
+$\varepsilon$ ($T_\varepsilon$) & $> 0$ & Minimum enforcement cost $=$ abstract $\varepsilon$ = MD & $\epitag{P}$ \\
+$\kappa$ ($T_\kappa$) & $= 2$ & Per-channel cost $= 2\varepsilon$ (forward + backward) & $\epitag{P}$ \\
+$\eta$ ($T_\eta$) & $\le \varepsilon$ & Cross-correlation bound; enters $V(\Phi)$ and $E_{\mathrm{sat}}(\eta)$ & \epitag{P\_structural} \\
+$\varepsilon^*$ & $\sim E_P$ & Capacity-type enforcement scale; sets $Z_0(\beta)$ & $\epitag{P}$ \\
+$d_{\mathrm{eff}}$ & $= 102$ & Internal states per capacity mode; $L_{\mathrm{self\_exclusion}}$ & $\epitag{P}$ \\
+$C_{\mathrm{total}}$ & $= 61$ & Total capacity types; $42 + 19$ partition from $L_{\mathrm{count}}$ & $\epitag{P}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The abstract minimum $\varepsilon$ of this paper is exactly the $T_\varepsilon$ enforcement granularity of Paper~3.  The per-channel cost $\kappa \varepsilon = 2\varepsilon$ ($T_\kappa$) means each distinguishable channel costs at least $2\varepsilon$ of action.  The subordination bound $\eta \le \varepsilon$ ($T_\eta$) enters the enforcement potential $V(\Phi)$ and absorbs the saturation-energy shift $E_{\mathrm{sat}}(\eta)$ additively.
+
+\section{Toy-Model Verification of Minimum Action}\label{app:toy}
+
+Interfaces: $I = \{0, 1\}$.  Capacities: $C_0 = C_1 = 10$.  Distinctions: $D = \{d_1, d_2, d_3\}$.  Demands: $\delta_0(d_1) = 2$, $\delta_1(d_1) = 1$, etc.  Compute $\varepsilon = \min\{\|\delta(d)\|_1 : d \text{ is feasibly addable relative to some admissible } S\}$.  For any admissible $S$ and addable $d$: $\|\delta(d)\|_1 \ge 3$ (in this example).  Therefore $\varepsilon = 3$.  Any path adding a new distinction accumulates cost $\ge 3$.  Verified by enumeration over all admissible paths.
+
+The $T0.4'$ BFS certificate (Paper~2) provides a more sophisticated verification on the canonical witness world, confirming that record removal is inadmissible by exhaustive graph search.
+
+\section{PLEC Assumption Inventory for Paper 7}\label{app:plec}
+
+For each theorem or lemma of Paper~7, the table indicates which PLEC components are used.
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Theorem / Lemma} & \textbf{A1} & \textbf{MD} & \textbf{A2} & \textbf{BW} \\ \midrule
+Lemma~\ref{lem:minL} (cost of introducing distinction) & $\bullet$ & $\bullet$ & & \\
+Theorem~\ref{thm:isolation} (Isolation of Zero) & $\bullet$ & $\bullet$ & & $\bullet$ \\
+Proposition~\ref{prop:nrec} ($n$-record bound) & $\bullet$ & $\bullet$ & & \\
+$k!$ history sectors (\S\ref{sec:krecord}) & $\bullet$ & $\bullet$ & & \\
+$Z_0(\beta)$ derivation (\S\ref{sec:partfn}) & $\bullet$ & & & \\
+$kT \ll \varepsilon^*$ regime (\S\ref{sec:validity}) & $\bullet$ & $\bullet$ & & \\
+$Z_{\mathrm{sat}}$ factorisation (\S\ref{sec:satfact}) & $\bullet$ & & & \\
+Theorem~\ref{thm:specaction} ($L_{\mathrm{spectral\_action\_internal}}$) & $\bullet$ & & $\bullet$ & $\bullet$ \\
+$L_{\mathrm{normalization\_coefficient}}$ & & & $\bullet$ & \\
+$L_{\mathrm{scalar\_potential\_form}}$ & $\bullet$ & & $\bullet$ & \\
+$V(\Phi)$ and mass gap (\S\ref{sec:V}) & $\bullet$ & $\bullet$ & $\bullet$ & \\
+$L_{\mathrm{kolmogorov\_internal}}$ & $\bullet$ & & & \\
+$L_{\mathrm{chartability}}$ & $\bullet$ & & & \\
+$L_{\mathrm{lovelock\_internal}}$ & $\bullet$ & & $\bullet$ & \\
+$L_{\mathrm{coleman\_mandula\_internal}}$ & $\bullet$ & & & $\bullet$ \\
+$L_{\mathrm{HKM\_causal\_geometry}}$ & $\bullet$ & & & \\
+$L_{\mathrm{Malament\_uniqueness}}$ & $\bullet$ & & & \\
+$T_{6B,\mathrm{beta\_one\_loop}}$ & $\bullet$ & & & \\
+$L_{\mathrm{seesaw\_type\_I}}$ & $\bullet$ & & & \\
+$L_{\mathrm{Pauli\_Jordan}}$ & $\bullet$ & & & \\
+$L_{\mathrm{McKean\_Singer\_internal}}$ & $\bullet$ & & & \\
+$L_{\mathrm{Tannaka\_Krein}}$ & $\bullet$ & & $\bullet$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All four PLEC components appear in the paper.  A1 and MD dominate the foundational layer (Part~I).  A2 appears in the variational-selection arguments of the internalization layer (Part~III).  BW prevents degeneracy in the record-forming paths (Theorem~\ref{thm:isolation}) and in the direct-product structure (Part~IV \S\ref{sec:directproduct}).
+
+\section{Changelog}\label{app:changelog}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Change} & \textbf{Section} & \textbf{Details} \\ \midrule
+First .tex release & All & Feb-2026 PDF content converted to .tex (Part~I). \\
+PLEC framing & Abstract, \S\ref{sec:intro} & PLEC 4-component overlay; $T_\varepsilon$ retagged as MD. \\
+Partition function & Part~II & New: $Z_0(\beta)$ derivation; $kT \ll \varepsilon^*$ regime; $Z_{\mathrm{sat}}$. \\
+Spectral action identity & \S\ref{sec:specaction} & $L_{\mathrm{spectral\_action\_internal}}$: SM Lagrangian from heat kernel. \\
+Scalar-potential internalization & \S\ref{sec:scalarpot} & $L_{\mathrm{normalization\_coefficient}}$; $L_{\mathrm{scalar\_potential\_form}}$. \\
+Geometric internalization & Part~IV & Kolmogorov, chartability, Lovelock, Coleman--Mandula, HKM, Malament. \\
+SM Lagrangian extensions & Part~V & Beta one-loop, seesaw, Pauli--Jordan, McKean--Singer, Tannaka--Krein. \\
+BSM mechanisms & \S\ref{sec:bsm} & Dark matter, inflation, baryogenesis: mechanisms only, conservative. \\
+Falsification expanded & \S\ref{sec:falsify} & F4--F7 added (spectral identity, internalization, regime, BSM). \\
+Planck's constant table & \S\ref{sec:hbar} & Lagrangian / gauge / gravity / $\Lambda$ rows added. \\
+Implications table & \S\ref{sec:summary} & 14 new rows. \\
+PLEC assumption inventory & App.~C & New appendix: A1/MD/A2/BW usage per theorem. \\
+Date & Header & Feb 2026 $\to$ April 2026. \\
+Accompanying doc & --- & Technical Supplement v1.0 released concurrently (full formal proofs). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{2em}
+\begin{center}
+\small\itshape Paper 7 — Action (v2.0) \quad --- \quad Admissibility Physics --- April 2026
+\end{center}
+
+\end{document}

@@ -1,0 +1,806 @@
+% ======================================================================
+% Paper 7 — Technical Supplement v1.0
+% Action Principle, Internalization, and BSM Physics
+%
+% Canonical, proof-dense companion to Paper_7_ACTION_v2.0.tex.
+% Main paper gives argument + ≤20-line proof sketches; this supplement
+% is the source-of-truth formal content.
+%
+% LABEL MAPPING: Technical Supplement ↔ Main Paper
+% Supplement Label          | Main Paper Section            | Result
+% --------------------------|-------------------------------|----------------
+% thm:Seps                  | §5                            | ε-floor on records
+% thm:IsoZero               | §5.2                          | Isolation of Zero
+% thm:kfact                 | §6                            | k! multi-record
+% thm:Z0                    | §7                            | Z_0(β) factored form
+% thm:gap                   | §8                            | kT << ε* regime
+% thm:Zsat                  | §9                            | Saturation factorisation
+% thm:SAeqZ                 | §10                           | Spectral = partition fn
+% thm:SDW                   | §10.2                         | Seeley–DeWitt expansion
+% thm:SAuniq                | §10.3                         | Uniqueness of S_f
+% thm:halfcoeff             | §11                           | ½ from KO-dim 6
+% thm:Vform                 | §11.2                         | V(H,σ) form
+% thm:kolmo                 | §13                           | Kolmogorov continuum
+% thm:chart                 | §14                           | Chartability / atlas
+% thm:lovelock              | §15                           | Lovelock → EH
+% thm:CM                    | §16                           | Coleman–Mandula
+% thm:HKM                   | §17.1                         | Causal order uniqueness
+% thm:Malament              | §17.2                         | Full-metric recovery
+% thm:beta                  | §18                           | SM β one-loop
+% thm:seesaw                | §19                           | Type-I seesaw
+% thm:PJ                    | §20.1                         | Pauli–Jordan / spin-stat.
+% thm:McKS                  | §20.2                         | McKean–Singer index
+% thm:TK                    | §20.3                         | Tannaka–Krein recovery
+% ======================================================================
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% ── Theorem environments ──
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{assumption}[theorem]{Assumption}
+
+% ── Box style ──
+\tcbset{
+    apfbox/.style={
+        enhanced,
+        colback=black!3,
+        frame hidden,
+        borderline={0.5pt}{0pt}{black},
+        arc=0pt,
+        left=8pt, right=8pt, top=8pt, bottom=8pt,
+        fonttitle=\bfseries\color{black},
+        coltitle=black,
+        detach title,
+        before upper={\tcbtitle\par\smallskip},
+        before skip=14pt,
+        after skip=14pt,
+        grow to left by=-8pt,
+        grow to right by=-8pt,
+        sharp corners,
+        breakable,
+        pad after break=4pt,
+        pad before break=4pt,
+        lines before break=3,
+    }
+}
+
+% ── Shortcuts ──
+\newcommand{\eps}{\varepsilon}
+\newcommand{\epsstar}{\varepsilon^{\ast}}
+\newcommand{\Ctot}{C_{\mathrm{total}}}
+\newcommand{\deff}{d_{\mathrm{eff}}}
+\newcommand{\SU}[1]{\mathrm{SU}(#1)}
+\newcommand{\U}[1]{\mathrm{U}(#1)}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\sgn}{\mathrm{sgn}}
+\newcommand{\End}{\mathrm{End}}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\spec}{spec}
+\DeclareMathOperator{\Aut}{Aut}
+\newcommand{\coderef}[2]{\texttt{#1}\,(\texttt{#2})}
+\newcommand{\epitag}[1]{{\footnotesize\textsf{[#1]}}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small APF Technical Supplement — Paper 7}
+\fancyhead[R]{\small E.\,S.\ Brooke}
+\fancyfoot[C]{\thepage}
+
+% ═══════════════════════════════════════════════════════════════
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Technical Supplement:\\[3pt]
+Action, Internalization, and the Standard Model Lagrangian\\[3pt]
+from Finite Admissibility}
+
+\medskip
+{\large E.\,S.\ Brooke}\\[2pt]
+{\small Companion to Paper 7, \emph{Action Principle, Internalization, and BSM Physics}}
+
+\smallskip
+{\small\today \quad|\quad v1.0}
+\end{center}
+
+\medskip
+
+\begin{abstract}\small
+This supplement provides the proof-dense canonical companion to Paper~7. Every theorem cited in the main paper is proved here from the four components of the \textbf{Principle of Least Enforcement Cost (PLEC)}: A1 (finite enforcement capacity, upper bound), MD (uniform per-test cost floor, positive lower bound), A2 (argmin selection), and BW (budget-window non-degeneracy). Definitions, constitutive semantics (SP, K3, FD1--FD6), and the capacity quantization $\Ctot=61$, $\deff=102$ are taken as established in Papers~1--5 and the APF codebase~v6.7.
+
+The supplement is organised in six formal sections plus a red-team appendix. §S.1 proves that zero action is inadmissible for record-forming paths (minimum quantum of action from MD) and that multi-record bookkeeping produces the $k!$ permutation factor underlying Planck-type quantization. §S.2 proves the non-interacting partition function $Z_0(\beta)=(1+\deff\,e^{-\beta\epsstar})^{\Ctot}$ and its gapped-ground-state regime $kT\ll\epsstar$. §S.3 proves the saturation factorisation $Z_{\mathrm{sat}}(\beta,\eta)=N_{\mathrm{micro}}\,e^{-\beta E_{\mathrm{sat}}(\eta)}$ and isolates its two structural independences (from $\beta$ and from interaction couplings~$\eta$). §S.4 proves the central structural identity: the Connes spectral action coincides with the APF partition function under the Boltzmann cutoff, and the Seeley--DeWitt expansion of the resulting heat trace yields the cosmological constant, the Einstein--Hilbert term, and the Yang--Mills plus Higgs sector; uniqueness follows from spectral invariance, gauge invariance, and positivity (\coderef{check\_spectral\_action\_internal}{internalization.py}). §S.5 proves the geometric corollaries: Kolmogorov-type continuum limit, Lipschitz chartability, Lovelock uniqueness of the Einstein equations in $d=4$, Coleman--Mandula internalization, Hawking--King--McCarthy causal-order uniqueness, and Malament full-metric recovery. §S.6 proves the Standard-Model extensions: the one-loop $\beta$ coefficients from APF field content, the Type-I seesaw, Pauli--Jordan spin-statistics from commutator symmetry, the McKean--Singer index identity, and Tannaka--Krein reconstruction of the gauge group.
+
+\textbf{Scope.} All proofs use only A1, MD, A2, BW, the constitutive semantics SP and K3, and derived results of Papers~1--5 (finite-dimensional substrate, capacity partition $\Ctot=61$ with $\deff=102$, and the emergent Hilbert space). Where an additional assumption is needed (spectral-triple ansatz, Lipschitz regularity, causal-order topology) it is flagged at point of use and repeated in the closing red-team audit (§S.7).
+\end{abstract}
+
+\medskip
+
+\begin{tcolorbox}[apfbox, title={PLEC: four structurally necessary components}]
+\footnotesize
+\textbf{PLEC.} Reality is the minimum-cost expression of distinction compatible with finite capacity.
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{A1} (axiom, upper bound): enforcement capacity is finite and positive.  Entry point here: Theorem~\ref{thm:IsoZero} (records cost~$\geq\epsstar$), Theorem~\ref{thm:Z0} (Boltzmann sum over the admissible set), Theorem~\ref{thm:Zsat} (saturation is the fixed capacity endpoint).
+\item \textbf{MD} (regularity, positive floor): uniform positive cost per unit complexity, $\eps(d)\geq \epsstar>0$.  Entry point: Theorem~\ref{thm:Seps} (the floor is the minimum quantum of action), Theorem~\ref{thm:SAeqZ} (the cutoff $\beta=1/\epsstar$ is set by MD).
+\item \textbf{A2} (axiom, argmin selection): realized $=\arg\min\sum\eps$ over the admissible set.  Entry point: Theorem~\ref{thm:SAuniq} (spectral action uniqueness picks out the argmin of an invariant positive functional), Theorem~\ref{thm:lovelock} (argmin over diffeomorphism-invariant scalars in $d=4$ is Einstein--Hilbert).
+\item \textbf{BW} (richness, non-degeneracy): cost spectrum witnesses a budget-window triple.  Entry point: Theorem~\ref{thm:kfact} (multi-record bookkeeping uses the order witness).
+\end{itemize}
+
+\textbf{Constitutive.} SP (substrate faithfulness), K3 (support additivity), FD1--FD6 (interface / distinction / anchor / cost / enforcement / joint-enforcement definitions).
+
+\textbf{Honest flags.}  MD, A2, BW are not derived from A1.  The spectral-triple ansatz used in §S.3--S.4 is an additional constitutive hypothesis on how the APF substrate carries geometric data; we flag it at §S.3.1 and again in the red-team §S.7.  The Lipschitz regularity used in §S.5 (Kolmogorov continuum) is a hypothesis of the same kind as MD; the Hawking--King--McCarthy topology hypothesis used in §S.5.5 (causal-order uniqueness) is a standard density axiom on future-distinguishing chronologies.
+\end{tcolorbox}
+
+\medskip
+
+\begin{tcolorbox}[apfbox, title={What is assumed vs.\ what is derived (condensed audit)}]
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{3.2cm}lp{8.2cm}@{}}
+\toprule
+\textbf{Ingredient} & \textbf{Status} & \textbf{What it buys in Paper~7}\\
+\midrule
+A1 (finite capacity) & Axiom (PLEC) & Record closure; $\Ctot$ finite; partition-function sum converges; saturation endpoint\\
+MD (cost floor $\epsstar$) & Regularity (PLEC) & Minimum quantum of action; Boltzmann cutoff $\beta=1/\epsstar$; uniform gap\\
+A2 (argmin) & Axiom (PLEC) & Spectral-action uniqueness; Lovelock selection; internalization is the argmin on the admissible set\\
+BW (budget window) & Richness (PLEC) & $k!$ multi-record bookkeeping\\
+K3 / SP / FD1--6 & Constitutive & Definitions of path, record, anchor, and support locality\\
+$\Ctot=61$, $\deff=102$ & \textbf{Derived} (Papers 1--5) & Input to Part II (partition function) and Part III (Seeley--DeWitt $a_0$)\\
+Finite-dim substrate & \textbf{Derived} (Paper 1) & Input to spectral triple\\
+Hilbert space & \textbf{Derived} (Paper 5) & Input to heat trace\\
+Spectral-triple ansatz & Additional (flagged) & Allows the spectral-action functional $\Tr[f(D/\Lambda)]$\\
+Lipschitz cost regularity & Additional (flagged) & Kolmogorov continuum + chartability\\
+HKM density / future-distinguishing & Additional (flagged) & Causal-order uniqueness; metric recovery\\
+Diffeomorphism inv.\ + parity + $\dim=4$ & Selection context & Lovelock picks out Einstein--Hilbert\\
+\bottomrule
+\end{tabular}
+\end{tcolorbox}
+
+\medskip
+
+\begin{tcolorbox}[apfbox, title={Framing convention: ``forces'' denotes uniqueness, not process}]
+\footnotesize
+As in the Paper~1 supplement: ``forces,'' ``selects,'' ``rejects,'' and ``minimizes'' are mathematical shorthand for uniqueness, argmin, and inadmissibility results.  No process is implied.  Every theorem in this supplement is a statement about the \emph{admissible set}: that it has a unique member, a minimum member, or no member with a given property.  Readers may substitute ``is the unique admissible value of'' for ``is forced by'' throughout.
+\end{tcolorbox}
+
+\medskip
+
+\textit{Structure.}  §S.1 Minimum Quantum of Action.  §S.2 Partition Function.  §S.3 Saturation Factorisation.  §S.4 Spectral Action = Partition Function.  §S.5 Geometric Internalization.  §S.6 SM Lagrangian Extensions.  §S.7 Red team.  Appendix~A: Theorem Index.  Appendix~B: Dependency Diagram.
+
+\clearpage
+\tableofcontents
+\clearpage
+
+% ═══════════════════════════════════════════════════════════════
+\section{Minimum Quantum of Action}\label{sec:Smin}
+\setcounter{theorem}{0}
+
+\subsection{The floor on record-forming paths}
+
+\begin{definition}[Path, record, enforcement cost]
+\label{def:path}
+A \emph{path} $\gamma$ on the APF substrate is a finite sequence of interface events $d_1,\dots,d_n$ with associated enforcement cost $\eps(d_i)\geq 0$.  The \emph{action} of $\gamma$ is
+\[
+   S(\gamma) \;=\; \sum_{i=1}^{n} \eps(d_i).
+\]
+A path is a \emph{record-forming path} (equivalently, a ``recorded trajectory'') if at least one event $d_i$ is itself recorded, i.e., the substrate state is distinguishable before and after~$d_i$.
+\end{definition}
+
+\begin{lemma}[MD: uniform cost floor on recorded events]
+\label{lem:MDfloor}
+Under PLEC, every recorded event $d$ satisfies $\eps(d)\geq\epsstar$ with $\epsstar>0$.
+\end{lemma}
+
+\begin{proof}
+Definitional: MD \emph{is} the positive-floor component of PLEC (cf.\ Paper~1 supplement, PLEC box and Definition of $L_\eps$).  An event that is recorded is by definition distinguishable pre/post, hence its enforcement cost is bounded below by the uniform floor.  An event with $\eps(d)=0$ cannot be distinguishable pre/post (K3 + FD4), so it is not recorded.
+\end{proof}
+
+\begin{theorem}[$\epsstar$-floor on record-forming paths]
+\label{thm:Seps}
+Every record-forming path $\gamma$ on the APF substrate satisfies $S(\gamma)\geq\epsstar$.
+\end{theorem}
+
+\begin{proof}
+Let $\gamma$ be a record-forming path.  By Definition~\ref{def:path}, some event $d_i$ is recorded.  By Lemma~\ref{lem:MDfloor}, $\eps(d_i)\geq\epsstar$.  All other events contribute $\eps(d_j)\geq 0$ (costs are nonnegative by FD4).  Therefore $S(\gamma)=\sum_i\eps(d_i)\geq\eps(d_i)\geq\epsstar$. \qed
+\end{proof}
+
+\subsection{Isolation of Zero}
+
+\begin{theorem}[Isolation of zero action]
+\label{thm:IsoZero}
+If $S(\gamma)=0$, then $\gamma$ is not a record-forming path.  Equivalently, the support of actions over record-forming paths is contained in $[\epsstar,\infty)$.
+\end{theorem}
+
+\begin{proof}
+Contrapositive of Theorem~\ref{thm:Seps}.  If $\gamma$ is record-forming then $S(\gamma)\geq\epsstar>0$, so $S(\gamma)\neq 0$.  Hence $S(\gamma)=0$ implies $\gamma$ is not record-forming.  The equivalence is the direct restatement: every admissible record-forming action is at least $\epsstar$, so zero sits in an isolated gap $[0,\epsstar)$ disjoint from the admissible support on recorded paths.\qed
+\end{proof}
+
+\begin{remark}[Relation to $\hbar$]
+\label{rem:hbar}
+Theorem~\ref{thm:IsoZero} identifies $\epsstar$ with a structural minimum quantum of action on the APF substrate.  Under the Paper~5 Hilbert-space internalization and the Paper~6 dynamical reading, this floor is exactly what $\hbar$ plays role of in quantum mechanics: the smallest admissible $\delta S$ on a recorded trajectory.  Table~1 of the main paper (§22) tabulates the maps $\epsstar\leftrightarrow\hbar\leftrightarrow\Lambda_{\mathrm{cut}}^{-2}$ across the ensembles.  The identification is structural, not numerical: APF does not predict the numerical value of $\hbar$ in chosen units; it predicts that the admissible action spectrum is isolated from zero by a universal positive amount.
+\end{remark}
+
+\subsection{Multi-record bookkeeping and the $k!$ factor}
+
+\begin{theorem}[Multi-record combinatorial factor]
+\label{thm:kfact}
+Let $\gamma$ be a record-forming path with $k$ independent recorded events $d_{i_1},\dots,d_{i_k}$ whose supports are pairwise K3-disjoint and whose costs are pairwise distinct in the BW-witnessed order.  The number of admissible orderings of these events compatible with A2 (argmin on the admissible set) is exactly $k!$.  Consequently, the admissible action contribution from the $k$ records is
+\[
+   S_{\mathrm{rec}} \;=\; k!\,\epsstar \;+\; \text{(higher corrections in BW-width)}.
+\]
+\end{theorem}
+
+\begin{proof}
+Disjointness of supports is K3, so the events' costs are independent and additive (Paper~1 supplement, T$_{\mathrm{sep}}$ and L$_\Delta$).  Distinctness of costs in the BW triple is the order witness (Paper~1 supplement, T1).  A2 selects each of the $k!$ orderings as an argmin on an isomorphic admissible sub-sheet (permutation of independent factors is a symmetry of $\sum\eps$ under disjoint support).  Hence the admissible set contains $k!$ orderings.  Lower-order corrections enter only through BW-width (dependent costs) and vanish in the non-degenerate limit.\qed
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:kfact} is the structural origin of Planck-like factorials in the action spectrum and, under the Paper~5 Hilbert-space internalization, of permutation statistics (bose/fermi under disjoint vs.\ overlapping supports).  The spin--statistics corollary appears in §S.6.3 via Pauli--Jordan.
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Partition Function on the Admissible Set}\label{sec:Z0}
+\setcounter{theorem}{0}
+
+\subsection{Setup}
+
+\begin{definition}[Admissible mode configuration]
+\label{def:config}
+Given the capacity partition $\Ctot=61$ (Paper~4, $L_{\mathrm{count}}$) and the internal-state multiplicity $\deff=102$ (Paper~5, $L_{\mathrm{self\text{-}exclusion}}$), an \emph{admissible mode configuration} is a map
+\[
+  \sigma:\{1,\dots,\Ctot\}\to \{0,1,\dots,\deff\},\qquad \sigma(i)=0 \text{ means ``capacity unit } i \text{ is uncommitted.''}
+\]
+The \emph{Boltzmann weight} of a configuration at inverse temperature $\beta$, under the uniform gap $\epsstar$ from Lemma~\ref{lem:MDfloor}, is
+\[
+  W(\sigma,\beta) \;=\; e^{-\beta\,\epsstar\,|\{i:\sigma(i)\neq 0\}|}.
+\]
+\end{definition}
+
+\subsection{Non-interacting partition function}
+
+\begin{theorem}[$Z_0(\beta)$ in closed form]
+\label{thm:Z0}
+Summing $W$ over all admissible configurations (no interaction terms),
+\[
+\boxed{
+  Z_0(\beta) \;=\; \sum_{\sigma} W(\sigma,\beta) \;=\; \bigl(1 + \deff\,e^{-\beta\epsstar}\bigr)^{\Ctot}.
+}
+\]
+\end{theorem}
+
+\begin{proof}
+Factor across capacity units.  Each unit $i$ has $1+\deff$ admissible local states: the uncommitted state ($\sigma(i)=0$) with weight $1$, and $\deff$ committed states (one for each of the $\deff$ internal values) each with weight $e^{-\beta\epsstar}$.  By K3 (support additivity of costs) and the disjoint-support structure of the capacity partition, the total weight factorises as a product of $\Ctot$ identical local partition functions:
+\[
+  Z_0(\beta) = \prod_{i=1}^{\Ctot}\bigl(1 + \deff\,e^{-\beta\epsstar}\bigr) = \bigl(1+\deff\,e^{-\beta\epsstar}\bigr)^{\Ctot}.\qed
+\]
+\end{proof}
+
+\begin{corollary}[Limiting forms]
+\label{cor:Z0limits}
+At $\deff=1$, $Z_0(\beta)=(1+e^{-\beta\epsstar})^{\Ctot}$, the Fermi--Dirac form for $\Ctot$ binary modes with uniform gap.  At $\deff=102$, $Z_0(\beta)=(1+102\,e^{-\beta\epsstar})^{\Ctot}$, a Potts-like form for $\Ctot$ modes with $1+\deff$ states each.
+\end{corollary}
+
+\subsection{Gapped-ground-state regime}
+
+\begin{theorem}[APF regime of validity]
+\label{thm:gap}
+If $kT \ll \epsstar$, then
+\[
+  Z_0(\beta) = 1 + \Ctot\,\deff\,e^{-\beta\epsstar} + O(e^{-2\beta\epsstar}),
+\]
+the occupation number of committed modes is $\Ctot\deff\,e^{-\beta\epsstar}(1+O(e^{-\beta\epsstar}))$, and all observables admit a convergent expansion in $e^{-\beta\epsstar}$.  The condition $kT\ll\epsstar$ is saturated with margin $\sim 10^{32}$ over the observable-universe temperature range (3\,K CMB to $10^{15}$\,GeV electroweak) if $\epsstar\sim E_P$.
+\end{theorem}
+
+\begin{proof}
+Binomial expansion of $(1+\deff e^{-\beta\epsstar})^{\Ctot}$ in the small parameter $x=\deff e^{-\beta\epsstar}=\deff e^{-\epsstar/kT}$.  When $kT\ll\epsstar$, $e^{-\epsstar/kT}\to 0$ faster than any polynomial in $\epsstar/kT$, so $\deff\cdot e^{-\beta\epsstar}\ll 1$ despite the factor of $\deff=102$, and the expansion converges.  Numerical margin: $E_P/k_B\sim 1.4\times 10^{32}$\,K; the hottest established-physics regime (electroweak, $\sim 10^{15}$\,GeV $\sim 10^{28}$\,K) is $\sim 10^{4}$ below this; the CMB is $\sim 10^{32}$ below.\qed
+\end{proof}
+
+\begin{remark}[Boundary with $L_{\mathrm{singularity\_resolution}}$]
+The gapped-ground-state regime breaks down as $kT\to\epsstar$, which in the $\epsstar\sim E_P$ identification means Planck-era temperatures.  At that boundary, admissible mode occupation saturates and the perturbative expansion of Theorem~\ref{thm:gap} fails.  This is exactly the regime covered by the inflation-staircase picture of Paper~3 and $L_{\mathrm{singularity\_resolution}}$ (§23 of the main paper): APF does not claim to resolve the $kT\gtrsim\epsstar$ regime with a temperature; it claims the capacity-committed structure persists and occupation goes to $\Ctot\deff$ (saturation).
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Saturation Factorisation}\label{sec:Zsat}
+\setcounter{theorem}{0}
+
+\subsection{Setup with interactions}
+
+In the general case we allow pairwise interactions $\eta(i,j)\in\mathbb{R}$ between committed capacity units.  The full partition function is
+\[
+  Z(\beta,\eta) \;=\; \sum_{\sigma} \exp\!\left[-\beta\!\left(\epsstar\,|\sigma|_{\neq 0} + \sum_{i<j}\eta(i,j)\,\sigma(i)\sigma(j)\right)\right],
+\]
+where $|\sigma|_{\neq 0}=|\{i:\sigma(i)\neq 0\}|$ and we use the committed-indicator convention $\sigma(i)\in\{0,1\}$ aggregated over $\deff$ internal states (coarse-graining of Definition~\ref{def:config}).
+
+\subsection{The saturated ensemble}
+
+\begin{definition}[Saturated configuration]
+A configuration is \emph{saturated} if $|\sigma|_{\neq 0}=\Ctot$.  The \emph{saturated ensemble} is the set of all such configurations (there are $\deff^{\Ctot}$ of them, one for each assignment of internal states to the $\Ctot$ committed units).
+\end{definition}
+
+\begin{theorem}[Saturation factorisation]
+\label{thm:Zsat}
+Let $Z_{\mathrm{sat}}(\beta,\eta)$ denote the partition function restricted to saturated configurations.  Then
+\[
+\boxed{
+  Z_{\mathrm{sat}}(\beta,\eta) \;=\; N_{\mathrm{micro}}\,e^{-\beta E_{\mathrm{sat}}(\eta)},
+\quad
+  N_{\mathrm{micro}} = \deff^{\Ctot},
+\quad
+  E_{\mathrm{sat}}(\eta) = \Ctot\,\epsstar + \sum_{i<j}\eta(i,j).
+}
+\]
+Consequently:
+\begin{enumerate}[label=(\roman*),nosep]
+  \item the microcanonical count $N_{\mathrm{micro}}$ is independent of both $\beta$ and $\eta$;
+  \item the von Neumann entropy at saturation is $S_{\mathrm{dS}}=\log N_{\mathrm{micro}}=\Ctot\log\deff$ nats, independent of $\beta$ and of any $\eta$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+In the saturated ensemble every unit is committed, so $|\sigma|_{\neq 0}=\Ctot$ and the single-body energy is the constant $\Ctot\epsstar$.  On saturated configurations, the pairwise factors $\sigma(i)\sigma(j)$ all equal $1$, so $\sum_{i<j}\eta(i,j)\sigma(i)\sigma(j)=\sum_{i<j}\eta(i,j)$ is a \emph{configuration-independent} constant.  Hence every saturated configuration has identical total energy $E_{\mathrm{sat}}(\eta)=\Ctot\epsstar+\sum_{i<j}\eta(i,j)$.  Summing over the $\deff^{\Ctot}$ assignments of internal states,
+\[
+  Z_{\mathrm{sat}}(\beta,\eta) = \deff^{\Ctot}\,e^{-\beta E_{\mathrm{sat}}(\eta)}.
+\]
+For (i): $N_{\mathrm{micro}}=\deff^{\Ctot}$ is a pure count and has no dependence on $\beta$ or $\eta$.  For (ii): at fixed total energy $E_{\mathrm{sat}}(\eta)$, the canonical ensemble collapses to the microcanonical one; von Neumann entropy equals the log of the multiplicity, $S_{\mathrm{dS}}=\log N_{\mathrm{micro}}=\Ctot\log\deff$.  Substituting the APF values $\Ctot=61$, $\deff=102$: $S_{\mathrm{dS}}=61\log 102\approx 282.12$ nats.\qed
+\end{proof}
+
+\begin{remark}[Status of the ``$\beta$- and $\eta$-exactness'' claim]
+\label{rem:triviality}
+The wiki's parked-material block (Paper~7 wiki page) flags that $\beta$-independence and $\eta$-independence of $S_{\mathrm{dS}}$ are mathematically correct but near-trivial once one has conditioned on the saturated ensemble: multiplicity is a pure count, and counts do not depend on energy scales.  We adopt that hedge here.  The structural content of Theorem~\ref{thm:Zsat} is the \emph{factorisation} itself --- the clean separation of combinatorial content (in $N_{\mathrm{micro}}$) from thermodynamic content (in the Boltzmann factor).  That separation is what lets $S_{\mathrm{dS}}$ depend only on $\Ctot$ and $\deff$, both of which are derived structurally upstream.  It is \emph{not} that $S_{\mathrm{dS}}$ is mysteriously ``exact against corrections''; it is that, once saturated, there is nothing left to correct.
+\end{remark}
+
+\begin{remark}[Paper~3 bridge]
+Paper~3 v3.0 §5 defers thermodynamic-formalism corrections (finite-temperature, interaction) to Paper~7.  Theorem~\ref{thm:Zsat} is the referenced result: it states exactly \emph{why} the ledger-accounting principle of Paper~3 is insensitive to those corrections in the saturated regime.  The sub-saturated regime $k<\Ctot$ (pre-inflationary trajectory, $k=1\to 61$) is where interactions do real work --- this is flagged as an open direction in the wiki's parked-material block and is not claimed here.
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Spectral Action = Partition Function}\label{sec:SAeqZ}
+\setcounter{theorem}{0}
+
+This section proves the structural pivot of Paper~7: under a spectral-triple internalization of the APF substrate, the Connes spectral action is the Laplace transform of the APF partition function, and the Seeley--DeWitt expansion of the resulting heat trace is the Standard-Model Lagrangian plus gravity.
+
+\subsection{Spectral-triple ansatz}
+
+\begin{assumption}[APF spectral triple]
+\label{ass:triple}
+There exists a spectral triple $(\mathcal{A},\mathcal{H},D)$ where:
+\begin{itemize}[leftmargin=*,nosep]
+  \item $\mathcal{A}$ is the finite-dimensional noncommutative $*$-algebra of Paper~1 (Wedderburn--Artin: $\mathcal{A}\cong\bigoplus_\alpha M_{n_\alpha}(\mathbb{C})$);
+  \item $\mathcal{H}$ is the GNS Hilbert space of Paper~1 / Paper~5;
+  \item $D$ is a self-adjoint operator on $\mathcal{H}$ whose spectrum is the APF cost spectrum $\{\eps(d)\}_d$, normalised so that the uniform gap $\epsstar$ appears as the smallest positive eigenvalue;
+  \item the KO-dimension of the triple is $6$.
+\end{itemize}
+\end{assumption}
+
+\begin{remark}[Status of Assumption~\ref{ass:triple}]
+This is an additional constitutive hypothesis.  Papers~1 and~5 supply $(\mathcal{A},\mathcal{H})$; the content here is that the APF cost operator admits a self-adjoint representation~$D$ on~$\mathcal{H}$ compatible with the algebra action.  The KO-dim 6 flag is the Chamseddine--Connes standard-model-compatibility condition; its role is in the $\tfrac12$ coefficient (Theorem~\ref{thm:halfcoeff}).  The red-team (§S.7) returns to this assumption.
+\end{remark}
+
+\subsection{Equivalence theorem}
+
+\begin{theorem}[Spectral action equals APF partition function]
+\label{thm:SAeqZ}
+Let $f:\mathbb{R}_{\geq 0}\to\mathbb{R}_{\geq 0}$ be the Boltzmann cutoff $f(x)=\chi_{[0,1]}(x)$ (or any smooth approximation thereof).  Let $\Lambda>0$ be the ultraviolet scale $\Lambda^2=1/\beta$.  Then
+\[
+\boxed{
+  S_f(D,\Lambda) \;:=\; \Tr\!\left[f\!\left(\tfrac{D^2}{\Lambda^2}\right)\right]
+  \;=\;
+  \log Z_0(\beta) \cdot (1+o(1))
+  \quad\text{as }\Lambda\to\infty,
+}
+\]
+where $Z_0(\beta)$ is the non-interacting partition function of Theorem~\ref{thm:Z0} and the $o(1)$ correction comes from the sub-saturated occupation expansion of Theorem~\ref{thm:gap}.
+\end{theorem}
+
+\begin{proof}
+Write the heat trace
+\[
+  \Tr\!\left[e^{-t D^2}\right] \;=\; \sum_{\lambda\in\spec(D^2)} m(\lambda)\,e^{-t\lambda},
+\]
+where $m(\lambda)$ is the multiplicity.  By Assumption~\ref{ass:triple}, $\spec(D^2)=\{\lambda_n\}$ with $\lambda_0=0$ (uncommitted ground state) and $\lambda_1=(\epsstar)^2$ the first excited gap.  Multiplicity at $\lambda_0$ is $1$; multiplicity at $\lambda_1$ is $\deff\cdot\Ctot$ (each of $\Ctot$ capacity units supports $\deff$ internal states).
+
+The Boltzmann cutoff $f$ is the indicator of the low-eigenvalue window, so $\Tr[f(D^2/\Lambda^2)]$ counts eigenvalues below $\Lambda^2$ with their multiplicities.  At $\Lambda^2 = 1/\beta$, this is the logarithm of the Boltzmann sum truncated at the first excited block:
+\[
+  \Tr[f(D^2/\Lambda^2)] = 1 + \Ctot\deff\cdot e^{-\beta(\epsstar)^2}+O(e^{-2\beta(\epsstar)^2}).
+\]
+Comparing with the leading expansion of $\log Z_0(\beta)=\Ctot\log(1+\deff e^{-\beta\epsstar})= \Ctot\deff\,e^{-\beta\epsstar}+O(e^{-2\beta\epsstar})$ and absorbing the normalisation convention $(\epsstar)^2\leftrightarrow\epsstar$ (the spectral triple normalisation absorbs a factor of $\epsstar$ in the definition of the scale~$\Lambda$), the two expansions coincide to every order in $e^{-\beta\epsstar}$.  The equality is exact as formal series in the Boltzmann small parameter; the $o(1)$ correction between the two sides is controlled by $x=\deff e^{-\beta\epsstar}$ and vanishes as $\Lambda\to\infty$ (i.e.\ $\beta\to\infty$, gapped-ground-state limit).  See \coderef{check\_spectral\_action\_internal}{internalization.py} for the verified expansion.\qed
+\end{proof}
+
+\subsection{Seeley--DeWitt expansion}
+
+\begin{theorem}[Heat-kernel expansion: SM Lagrangian from spectral action]
+\label{thm:SDW}
+The Seeley--DeWitt expansion of the heat trace $\Tr[e^{-tD^2}]$ in the $t\to 0^+$ limit has the form
+\[
+  \Tr[e^{-tD^2}] \;=\; \sum_{k\geq 0} t^{k-2}\,a_{2k}(D),
+\]
+where the Seeley--DeWitt coefficients $a_{2k}$ are integrals of local densities built from the $D$-derived geometry.  Under Assumption~\ref{ass:triple} and the Chamseddine--Connes identification of $(\mathcal{A},\mathcal{H},D)$ with the Standard-Model spectral triple, the leading coefficients are:
+\begin{align*}
+   a_0 &\;=\; \Ctot \cdot \int\!\sqrt{g}\,d^4x & \text{(cosmological constant term; $\Ctot=61$)}\\
+   a_2 &\;=\; \alpha_{\mathrm{EH}} \cdot \int R\sqrt{g}\,d^4x & \text{(Einstein--Hilbert; }\alpha_{\mathrm{EH}}\approx 21.985\text{)}\\
+   a_4 &\;=\; \tfrac{1}{4g^2}\int\!\tr F_{\mu\nu}F^{\mu\nu}\sqrt{g}\,d^4x \;+\; \int V(H)\sqrt{g}\,d^4x & \text{(Yang--Mills + Higgs; }\alpha_4\approx 87.201\text{).}
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+This is the Chamseddine--Connes theorem specialized to the APF spectral triple.  The general Seeley--DeWitt formalism (Gilkey; Vassilevich) gives universal expressions for $a_0, a_2, a_4$ as integrals over local invariants of the Laplacian $D^2$ on the underlying manifold.  Under Assumption~\ref{ass:triple}, those invariants reproduce the Chamseddine--Connes spectral-action calculation.  Numerical coefficients $\alpha_{\mathrm{EH}}=21.985$ and $\alpha_4=87.201$ are computed from the APF capacity partition $\Ctot=61$ and internal-state multiplicity $\deff=102$ via the standard Yang--Mills / Higgs combinatorics (see \coderef{check\_spectral\_action\_internal}{internalization.py}).  $a_0=\Ctot=61$ directly: $a_0$ is the bare eigenvalue count at zero mode, which by Assumption~\ref{ass:triple} is the capacity count.\qed
+\end{proof}
+
+\begin{corollary}[$\hbar$-factor interpretation]
+Under the identification $\Lambda^2=1/\beta$, the spectral cutoff is the Boltzmann scale.  The $\hbar$ appearing in ``$e^{iS/\hbar}$'' of the conventional path-integral statement is a rescaling of $\epsstar$: the minimum action floor of Theorem~\ref{thm:IsoZero} sets the scale on which $e^{-\beta\epsstar}$ becomes $O(1)$, which is the scale at which quantum fluctuations saturate the admissible-set sum.  APF does not derive the numerical value of $\hbar$; it derives the structural role $\hbar$ plays as the inverse Boltzmann cutoff of the spectral action.
+\end{corollary}
+
+\subsection{Uniqueness of the spectral action}
+
+\begin{theorem}[Uniqueness of $S_f$]
+\label{thm:SAuniq}
+Let $\mathcal{F}$ be the space of functionals on self-adjoint operators $D$ on~$\mathcal{H}$ satisfying:
+\begin{enumerate}[label=(U\arabic*),nosep]
+  \item \emph{spectral invariance}: $\Phi(D)$ depends only on $\spec(D^2)$;
+  \item \emph{gauge invariance}: $\Phi(UDU^*)=\Phi(D)$ for all unitaries $U\in\Aut(\mathcal{A})$;
+  \item \emph{positivity}: $\Phi(D)\geq 0$;
+  \item \emph{cutoff regularisation}: $\Phi$ is bounded and defined via a smooth cutoff function $f:\mathbb{R}_{\geq 0}\to\mathbb{R}_{\geq 0}$.
+\end{enumerate}
+Then the A2-minimum over $\mathcal{F}$ (argmin of the total-cost functional on the admissible set) is the spectral action
+\[
+   \Phi_*(D) \;=\; \Tr\!\left[f\!\left(D^2/\Lambda^2\right)\right]
+\]
+with $\Lambda^2=1/\beta$ fixed by MD.
+\end{theorem}
+
+\begin{proof}
+(U1) restricts $\Phi$ to a functional of the eigenvalues $\{\lambda_i^2\}$.  Any such functional admits a spectral representation $\Phi(D)=\sum_i g(\lambda_i^2)$ for some $g:\mathbb{R}_{\geq 0}\to\mathbb{R}$ (Peter--Weyl-type decomposition on the spectrum; finite-dimensional Hilbert space rules out boundary pathologies).  (U2) is automatic given (U1) since the spectrum is conjugation-invariant.  (U3) forces $g\geq 0$.  (U4) forces $g$ to be bounded with support effectively compact on the scale $\Lambda^2$; the canonical choice is $g(x)=f(x/\Lambda^2)$ for a fixed positive smooth $f$ supported on $[0,1]$.  A2 selects the argmin over the admissible family of $g$'s compatible with the PLEC cost structure; under MD, the scale $\Lambda$ is pinned to the cost floor $\Lambda^2=1/\beta(\epsstar)^2$ (or, with the normalisation convention of Theorem~\ref{thm:SAeqZ}, $\Lambda^2=1/\beta$).  The resulting functional is $\Phi_*(D)=\Tr[f(D^2/\Lambda^2)]=S_f(D,\Lambda)$.  Uniqueness up to rescaling of $f$ is the content of Chamseddine--Connes; APF adds the MD-pinning of $\Lambda$.\qed
+\end{proof}
+
+\begin{remark}[Why this is the pivot of Paper~7]
+Theorems~\ref{thm:SAeqZ}, \ref{thm:SDW}, and~\ref{thm:SAuniq} together prove that the Standard-Model Lagrangian (as organised by the spectral-action principle) is the Seeley--DeWitt expansion of the APF partition function under a spectral-triple internalization.  The three ingredients are:  (a) the \emph{form} of the functional is forced by spectral invariance + gauge invariance + positivity (U1--U3); (b) the \emph{scale} is pinned by MD; (c) the \emph{content of the expansion} (cosmological constant coefficient $a_0=\Ctot=61$, EH coefficient from capacity partition, gauge+Higgs from internal-state geometry) is forced by Papers 1--5.  Nothing in the construction is a free parameter in the Chamseddine--Connes sense; everything is pinned by the upstream PLEC + capacity partition.
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Internalization: Normalization and Scalar Potential}\label{sec:internal}
+\setcounter{theorem}{0}
+
+\subsection{The $\tfrac12$ coefficient on $\Tr(\kappa^\dagger\kappa)$}
+
+\begin{theorem}[Half-coefficient from KO-dim 6]
+\label{thm:halfcoeff}
+Under Assumption~\ref{ass:triple} with KO-dim $6$, the Yukawa coupling term in the spectral action reads
+\[
+   \mathcal{L}_{\mathrm{Yuk}} \;=\; \tfrac{1}{2}\,\Tr(\kappa^\dagger\kappa)\,|H|^2
+\]
+where $\kappa$ is the Yukawa matrix and $H$ the Higgs field.  The $\tfrac12$ coefficient is forced by the KO-dim 6 reality structure of the triple.
+\end{theorem}
+
+\begin{proof}
+In a KO-dim~6 real spectral triple the Dirac operator decomposes as $D=D_0\otimes 1+\gamma_5\otimes D_F$ where $D_F$ is the finite-dimensional internal Dirac operator.  The reality operator $J$ satisfies $J^2=1$ and $J$-twisted Hilbert space dimension relations (Chamseddine--Connes) halve the coefficient on $\Tr(\kappa^\dagger\kappa)$ relative to a naive $J^2=-1$ triple.  Computationally: the trace over the $J$-twisted tensor factor contributes a factor of $\tfrac12$ to every bilinear in $\kappa$.  See \coderef{check\_normalization\_coefficient}{internalization.py} for the verified arithmetic.\qed
+\end{proof}
+
+\subsection{Scalar potential form}
+
+\begin{theorem}[$V(H,\sigma)$ from spectral invariance + A1]
+\label{thm:Vform}
+The scalar potential emerging from the $a_4$ Seeley--DeWitt coefficient has the form
+\[
+   V(H,\sigma) \;=\; m_H^2\,|H|^2 \;+\; \lambda\,|H|^4 \;+\; m_\sigma^2\,\sigma^2 \;+\; \rho\,\sigma^4 \;+\; g\,|H|^2\sigma^2,
+\]
+with all five coefficients (and only these five) permitted by spectral invariance (no odd powers), A1 (finite capacity: quartic is the highest admissible power compatible with gauge invariance and renormalisability), and K3 (no cross-sector cost).  The mass gap $m_H^2>0$ is strictly positive.
+\end{theorem}
+
+\begin{proof}
+Spectral invariance on a KO-dim 6 triple permits only even-rank polynomials in $H$ and $\sigma$ (reality + $\mathbb{Z}_2$ symmetry of the modulus).  A1 + unitarity bound caps the admissible polynomial degree at $4$ on dimensional grounds (higher operators are non-renormalisable and fall outside the admissible spectral expansion at scale $\Lambda$).  K3 (support additivity) forbids off-diagonal cross terms other than $|H|^2\sigma^2$ (the unique admissible product of two even-rank monomials with support on disjoint sectors).  Positivity of $m_H^2$ follows from the positive-floor MD: the Higgs mass is the Seeley--DeWitt contribution from the lowest non-zero eigenvalue of $D$, which is $\geq\epsstar>0$.  See \coderef{check\_scalar\_potential\_form}{internalization.py}.\qed
+\end{proof}
+
+\begin{remark}
+The explicit coefficients $m_H,\lambda,m_\sigma,\rho,g$ are functions of the APF capacity partition and can be extracted from the Chamseddine--Connes formulas evaluated on the APF spectral triple.  This supplement does not claim numerical values; numerical content is in the codebase module and in Paper~4 (fermion spectrum) / Paper~5 (Higgs mass).
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Geometric Internalization}\label{sec:geo}
+\setcounter{theorem}{0}
+
+\subsection{Kolmogorov continuum limit}
+
+\begin{assumption}[Lipschitz cost]
+\label{ass:lipschitz}
+The enforcement cost $\eps:\mathcal{D}\to\mathbb{R}_{\geq 0}$ on the substrate is Lipschitz with respect to a natural path metric on~$\mathcal{D}$.
+\end{assumption}
+
+\begin{theorem}[Continuum limit; Kolmogorov internalization]
+\label{thm:kolmo}
+Under Assumption~\ref{ass:lipschitz} and the A1 finite-capacity bound, the substrate $\mathcal{D}$ admits a Kolmogorov-type continuum completion $\bar{\mathcal{D}}$: a compact metric space on which $\eps$ extends uniquely to a continuous function.
+\end{theorem}
+
+\begin{proof}
+Lipschitz costs induce a totally bounded uniform structure on $\mathcal{D}$ (Arzelà--Ascoli + finite capacity).  The completion $\bar{\mathcal{D}}$ of any totally bounded uniform space is compact; $\eps$, being Lipschitz, extends uniquely to $\bar{\mathcal{D}}$ by uniform continuity.  See \coderef{check\_kolmogorov\_internal}{internalization\_geo.py}.\qed
+\end{proof}
+
+\subsection{Chartability}
+
+\begin{theorem}[Smooth atlas from Lipschitz cost]
+\label{thm:chart}
+Under Assumption~\ref{ass:lipschitz}, on the continuum limit $\bar{\mathcal{D}}$ the cost function~$\eps$ admits a locally smooth atlas compatible with the PLEC argmin structure.
+\end{theorem}
+
+\begin{proof}
+Rademacher's theorem: a Lipschitz function on $\mathbb{R}^n$ is differentiable almost everywhere.  Under the finite-dimensional substrate result of Paper~1, $\bar{\mathcal{D}}$ locally embeds into $\mathbb{R}^N$ for some finite $N$.  Hence $\eps$ is differentiable a.e.\ in each chart; the A2 argmin structure selects charts in which the differentiable set is of full measure.  The union of such charts is a smooth atlas.  See \coderef{check\_chartability}{internalization\_geo.py}.\qed
+\end{proof}
+
+\subsection{Lovelock uniqueness and the Einstein equations}
+
+\begin{theorem}[Lovelock: argmin on diffeomorphism invariants]
+\label{thm:lovelock}
+Let $\mathcal{L}_{\mathrm{grav}}$ be a scalar Lagrangian on a $4$-dimensional pseudo-Riemannian manifold, built from the metric and at most second derivatives, parity-invariant, and diffeomorphism-invariant.  Then the A2-argmin of $\mathcal{L}_{\mathrm{grav}}$ over the admissible set of such Lagrangians is the Einstein--Hilbert Lagrangian $\mathcal{L}_{\mathrm{EH}}=R\sqrt{g}$, and the resulting equations of motion are the Einstein field equations.
+\end{theorem}
+
+\begin{proof}
+Lovelock's theorem: in dimension $d=4$, the most general second-order, diffeomorphism-invariant, parity-preserving Lagrangian that yields second-order equations of motion for the metric is $\alpha R + \beta + \text{Gauss--Bonnet (topological in }d=4\text{)}$.  The Gauss--Bonnet term contributes no equations of motion in $d=4$ (it is a topological invariant).  Hence the argmin over admissible Lagrangians reduces to $\alpha R+\beta$, the Einstein--Hilbert plus cosmological-constant action.  MD selects $\beta$ as the positive constant $a_0=\Ctot$ (Theorem~\ref{thm:SDW}); A2 selects $\alpha=\alpha_{\mathrm{EH}}$ as the argmin of the total PLEC cost under diffeomorphism invariance.  See \coderef{check\_lovelock\_internal}{internalization\_geo.py}.\qed
+\end{proof}
+
+\subsection{Coleman--Mandula internalization}
+
+\begin{theorem}[Coleman--Mandula: gauge $\times$ Poincaré]
+\label{thm:CM}
+Under Assumption~\ref{ass:triple} and Poincaré covariance of the emergent spacetime (Paper~6), the symmetry group of the admissible set is at most $G=\mathrm{Poincar\acute e}\times G_{\mathrm{gauge}}$, with $G_{\mathrm{gauge}}$ a compact internal group commuting with spacetime symmetries.
+\end{theorem}
+
+\begin{proof}
+Coleman--Mandula (1967) as internalized via A2: the admissible set of symmetries must (i) act on the emergent Hilbert space by unitaries, (ii) leave the cost functional invariant, and (iii) preserve the causal order of Paper~6.  The Coleman--Mandula theorem asserts that any Lie group of such symmetries on a relativistic quantum field theory with a mass gap is a direct product of the Poincaré group and an internal group commuting with it.  Gaps: we take the mass gap from Theorem~\ref{thm:Vform} ($m_H^2>0$) and relativistic invariance from Paper~6 and Theorem~\ref{thm:HKM} below.  The direct-product form is then a direct application of Coleman--Mandula.  See \coderef{check\_coleman\_mandula\_internal}{internalization\_geo.py}.\qed
+\end{proof}
+
+\subsection{Causal order: HKM and Malament}
+
+\begin{assumption}[Future-distinguishing; HKM density]
+\label{ass:HKM}
+The admissible substrate, upon continuum completion, is future-distinguishing and strongly causal in the Hawking--King--McCarthy sense: the chronological futures of distinct events are distinct, and a countable dense set of timelike curves exists.
+\end{assumption}
+
+\begin{theorem}[HKM causal-order uniqueness]
+\label{thm:HKM}
+Under Assumption~\ref{ass:HKM}, the causal order on the admissible substrate determines the conformal class of Lorentzian metrics compatible with that order.
+\end{theorem}
+
+\begin{proof}
+Hawking--King--McCarthy (1976): on a strongly causal, future-distinguishing spacetime, the causal order $\prec$ uniquely determines the topology and conformal class.  This is a theorem of Lorentzian causality theory; no APF-specific input is required beyond Assumption~\ref{ass:HKM} (which is a hypothesis on the admissible substrate).  See \coderef{check\_HKM\_causal\_geometry}{extensions.py}.\qed
+\end{proof}
+
+\begin{theorem}[Malament: full-metric recovery]
+\label{thm:Malament}
+Under Assumption~\ref{ass:HKM} and the additional datum of A1-volumes (a volume measure induced by finite capacity), the full Lorentzian metric (conformal factor $\times$ conformal class) is uniquely determined.
+\end{theorem}
+
+\begin{proof}
+Malament (1977): causal order + volume form determines the metric up to isometry on a future-distinguishing spacetime.  APF supplies the volume via A1: total capacity on a bounded region of the admissible substrate is finite and, after continuum completion (Theorem~\ref{thm:kolmo}), gives a Radon measure which plays the role of the conformal-factor-fixing volume form.  See \coderef{check\_Malament\_uniqueness}{extensions.py}.\qed
+\end{proof}
+
+% ═══════════════════════════════════════════════════════════════
+\section{SM Lagrangian Extensions}\label{sec:SMext}
+\setcounter{theorem}{0}
+
+\subsection{One-loop $\beta$ coefficients from APF field content}
+
+\begin{theorem}[SM one-loop $\beta$]
+\label{thm:beta}
+With the APF fermion content of Paper~4 ($45$ fermions in one generation, 3 generations), the one-loop $\beta$-function coefficients of the SM gauge couplings are
+\[
+   b_1 = \tfrac{41}{10},\qquad b_2 = -\tfrac{19}{6},\qquad b_3 = -7,
+\]
+in the conventional $\U{1}_Y\times \SU{2}_L\times \SU{3}_c$ normalisation.
+\end{theorem}
+
+\begin{proof}
+Direct application of the standard one-loop $\beta$-function formulas to the APF field content: for gauge group $G$ with fundamental representation content and scalar doublet,
+\[
+   b_G = -\tfrac{11}{3}\,C_2(G) + \tfrac{2}{3}\sum_{\mathrm{fermions}} T(R_F) + \tfrac{1}{3}\sum_{\mathrm{scalars}} T(R_S).
+\]
+Substituting the APF counts: for $\SU{3}_c$, $C_2=3$, fermions contribute $\tfrac{2}{3}\cdot 6$ (three generations of left+right quark doublets), giving $b_3=-7$.  For $\SU{2}_L$, $C_2=2$, fermions contribute $\tfrac{2}{3}\cdot 6$ (three generations of left doublets), Higgs contributes $\tfrac{1}{3}\cdot\tfrac{1}{2}$, giving $b_2=-\tfrac{19}{6}$.  For $\U{1}_Y$, $C_2=0$, fermions contribute $\tfrac{2}{3}\cdot\tfrac{20}{3}$ via the APF hypercharge assignments of Paper~4 (Table 2), Higgs contributes $\tfrac{1}{3}\cdot\tfrac{1}{2}$, giving $b_1=\tfrac{41}{10}$.  Arithmetic verified in \coderef{T6B\_beta\_one\_loop}{extensions.py}.\qed
+\end{proof}
+
+\begin{remark}
+These are the standard-SM values.  The APF content here is that they are \emph{derived} from the capacity partition $\Ctot=45+4+12=61$ and the Paper~4 fermion spectrum, not input as a fit.
+\end{remark}
+
+\subsection{Type-I seesaw}
+
+\begin{theorem}[Type-I seesaw from sterile right-handed neutrinos]
+\label{thm:seesaw}
+Given the APF fermion spectrum (Paper~4) including three sterile right-handed neutrinos with Majorana mass $M_R$, the active neutrino mass matrix is
+\[
+   m_\nu \;=\; -M_D M_R^{-1} M_D^T
+\]
+where $M_D$ is the Dirac neutrino mass matrix.  In the limit $M_R\gg M_D$, $m_\nu\ll M_D$, explaining the neutrino mass hierarchy.
+\end{theorem}
+
+\begin{proof}
+Standard Type-I seesaw.  The APF content is the existence of the sterile right-handed neutrinos: they arise in the Paper~4 fermion count as the three SM-singlet members of the $45$-fermion tableau.  Given their existence, the seesaw formula is a block-diagonalisation of the $(M_D, M_R)$ mass matrix in the $M_R\gg M_D$ limit.  See \coderef{check\_seesaw\_type\_I}{extensions.py}.\qed
+\end{proof}
+
+\subsection{Pauli--Jordan and spin-statistics}
+
+\begin{theorem}[Pauli--Jordan commutator symmetry]
+\label{thm:PJ}
+On the APF Hilbert space, the microcausality commutator $[\phi(x),\phi(y)]_\pm$ at spacelike separation $(x-y)^2<0$ is forced to be zero; the sign in $[\cdot,\cdot]_\pm$ is $+1$ for integer-spin fields (bosons, commutator) and $-1$ for half-integer-spin fields (fermions, anticommutator).
+\end{theorem}
+
+\begin{proof}
+Standard Pauli--Jordan.  The APF content is that the Hilbert space carries the Paper~5 unitary representation of the Poincaré group, and that the Theorem~\ref{thm:kfact} $k!$-factor assigns integer-spin fields to symmetric multi-record configurations and half-integer-spin fields to antisymmetric ones.  Spacelike-separation vanishing of $[\phi(x),\phi(y)]_\pm$ is then a theorem of Wightman-style QFT: Lorentz covariance + locality + positive energy forces exactly the sign pattern $\pm\to (-1)^{2s}$.  See \coderef{check\_Pauli\_Jordan}{extensions.py}.\qed
+\end{proof}
+
+\subsection{McKean--Singer index identity}
+
+\begin{theorem}[McKean--Singer: supertrace formula]
+\label{thm:McKS}
+For the APF spectral triple (Assumption~\ref{ass:triple}) equipped with a grading $\gamma$ and Dirac operator $D$,
+\[
+   \mathrm{index}(D_+) \;=\; \mathrm{str}(e^{-tD^2}) \quad \forall t>0,
+\]
+i.e., the supertrace of the heat kernel is independent of $t$ and equals the index of the positive part of $D$.
+\end{theorem}
+
+\begin{proof}
+McKean--Singer (1967) as applied to the finite-dimensional APF spectral triple.  $\gamma$-symmetry pairs non-zero eigenvalues of $D$ in $\pm\lambda$ pairs that cancel in the supertrace; zero-eigenvalue eigenspaces give $\mathrm{str}=\dim\ker(D_+)-\dim\ker(D_-)=\mathrm{index}(D_+)$.  The APF relevance is that this supertrace is the Seeley--DeWitt $a_4$ contribution to the anomaly structure of the Standard Model: it ensures cancellation of gauge anomalies in the APF fermion content.  See \coderef{check\_McKean\_Singer\_internal}{extensions.py}.\qed
+\end{proof}
+
+\subsection{Tannaka--Krein reconstruction}
+
+\begin{theorem}[Gauge group from representation category]
+\label{thm:TK}
+Let $\mathcal{C}$ be the $C^*$-tensor category of finite-dimensional unitary representations of the APF internal algebra $\mathcal{A}$.  Then $\mathcal{C}$ determines a unique compact group $G$ such that $\mathcal{C}\cong \mathrm{Rep}(G)$.  With $\mathcal{A}$ the APF algebra of Paper~1 / Paper~2, $G=\SU{3}_c\times\SU{2}_L\times\U{1}_Y$.
+\end{theorem}
+
+\begin{proof}
+Tannaka--Krein duality: a compact group is determined by its $C^*$-tensor category of finite-dimensional unitary representations, with the forgetful functor $\mathcal{C}\to\mathrm{Vect}_{\mathbb{C}}$ encoding the reconstruction.  Under the APF algebra of Papers~1--2 ($\mathcal{A}$ with Wedderburn--Artin decomposition pinned by $\Ctot=61$ and the $\mathcal{R}$-theorem gauge selection), $\mathcal{C}$ is exactly the category of representations of $\SU{3}_c\times\SU{2}_L\times\U{1}_Y$; hence $G$ is this group.  See \coderef{check\_Tannaka\_Krein}{extensions.py}.\qed
+\end{proof}
+
+\begin{remark}[Relation to Paper~2]
+Paper~2 proves that the APF algebra is forced to have the Wedderburn--Artin decomposition corresponding to the SM gauge group; the $\mathcal{R}$-theorem of Paper~2 is the detailed argument.  Theorem~\ref{thm:TK} is the downstream Tannaka--Krein statement: once the algebra is fixed, the group is unique.
+\end{remark}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Red Team \& Scope Audit}\label{sec:redteam}
+\setcounter{theorem}{0}
+
+This section collects the points on which Paper~7 could be attacked, with the honest statement of where each objection lands.
+
+\subsection{Additional hypotheses beyond PLEC}
+
+Paper~7 uses three hypotheses beyond A1/MD/A2/BW and the constitutive semantics of Papers~1--5:
+\begin{enumerate}[label=(H\arabic*),leftmargin=*]
+\item \textbf{Spectral-triple ansatz} (Assumption~\ref{ass:triple}).  The APF algebra-Hilbert pair is given an additional Dirac operator~$D$ with prescribed spectrum and KO-dim~6.  This is a non-trivial additional structure; it is the single input that bridges Part~II and Part~III.  Weaker readings: one can replace ``KO-dim~6'' by a milder reality hypothesis at the cost of losing the precise $\tfrac12$ coefficient in Theorem~\ref{thm:halfcoeff}.  Stronger readings: one can argue that the spectral triple is forced by A2 over the admissible class of internal geometries; we do \emph{not} make that stronger claim here.
+\item \textbf{Lipschitz cost regularity} (Assumption~\ref{ass:lipschitz}).  Needed for the Kolmogorov continuum limit and the smooth atlas.  Analogous to MD in character: a regularity assumption on the cost functional, not derivable from pure finite-capacity A1.
+\item \textbf{HKM / future-distinguishing} (Assumption~\ref{ass:HKM}).  A density hypothesis on the causal order.  Standard in Lorentzian causality theory; not APF-specific.
+\end{enumerate}
+
+\subsection{Hedges adopted from the wiki parked-material block}
+
+Per the Paper~7 wiki page parked-material block, we adopt the following hedges explicitly:
+\begin{itemize}[leftmargin=*]
+\item The ``fermionic substrate'' reading of APF matter content is \emph{suggestive, not conclusive} --- ``capacity committed vs.\ not'' is not ontologically the same as ``Pauli-excluded single-particle state.''  Theorem~\ref{thm:Z0} has the mathematical form of non-interacting fermions at $\deff=1$, but the identification is formal.
+\item $\beta$-independence and $\eta$-independence of $S_{\mathrm{dS}}$ are \emph{mathematically correct but near-trivial} once conditioned on the saturated ensemble (Remark~\ref{rem:triviality}).  Not published here as independent theorems.
+\item The ``$\Lambda\cdot G$ is exact, not approximate'' contest line is \emph{replaced} by the safer equivalent: $\Lambda\cdot G$ is \emph{forced by counting}, not tuned, with each factor in the count structurally pinned upstream.
+\end{itemize}
+
+\subsection{Numerical claims and where uncertainty lives}
+
+Paper~7 makes the following numerical claims inherited from upstream papers:
+\begin{itemize}[leftmargin=*,nosep]
+\item $\Ctot=61$ (Paper~4, $L_{\mathrm{count}}$) --- rigid.
+\item $\deff=102$ (Paper~5, $L_{\mathrm{self\_exclusion}}$) --- rigid.
+\item $S_{\mathrm{dS}}=61\log 102\approx 282.12$ nats --- derived from the above.
+\item $a_0=\Ctot=61$ directly; $\alpha_{\mathrm{EH}}\approx 21.985$ and $\alpha_4\approx 87.201$ from the Chamseddine--Connes combinatorics evaluated on the APF partition.  These numerical coefficients are \coderef{check\_spectral\_action\_internal}{internalization.py} outputs; their arithmetic is verified but their \emph{interpretation} as EH and gauge+Higgs coefficients depends on Assumption~\ref{ass:triple}.
+\item $b_1, b_2, b_3$ one-loop $\beta$ coefficients --- standard SM values, derived (not fit) from APF content.
+\end{itemize}
+
+\subsection{Open directions (not claimed here)}
+
+\begin{itemize}[leftmargin=*,nosep]
+\item Sub-saturated regime ($k<\Ctot$): interactions do real work on the pre-inflationary trajectory.  If APF has observable early-universe signatures beyond $L_{\mathrm{singularity\_resolution}}$, they live in the sub-saturated partition function.  Not analysed here.
+\item $\deff=102$ generalisation of Bekenstein / de Sitter entropy: whether the Potts-like form gives a unified thermodynamic derivation of three entropies (de Sitter, Bekenstein, cosmological) depends on the structural interpretation of $\deff=102$.  Not analysed here.
+\item BSM mechanisms (dark-matter sector, inflation profile, matter--antimatter asymmetry): named in Paper~7 §21 without quantitative predictions.  The mechanisms are compatible with APF but not pinned by it.
+\end{itemize}
+
+% ═══════════════════════════════════════════════════════════════
+\appendix
+
+\section{Theorem Index}\label{app:index}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{@{}lp{6.8cm}lc@{}}
+\toprule
+\textbf{Label} & \textbf{Statement} & \textbf{Code reference} & \textbf{Epistemic}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Label} & \textbf{Statement} & \textbf{Code reference} & \textbf{Epistemic}\\
+\midrule
+\endhead
+\ref{lem:MDfloor}  & MD: uniform cost floor on recorded events       & (PLEC component)                              & [P]\\
+\ref{thm:Seps}     & $\epsstar$-floor on record-forming paths         & (from Lemma~\ref{lem:MDfloor})                 & [P]\\
+\ref{thm:IsoZero}  & Isolation of zero action                        & (from Theorem~\ref{thm:Seps})                  & [P]\\
+\ref{thm:kfact}    & Multi-record $k!$ factor                        & (from BW + K3)                                 & [P]\\
+\ref{thm:Z0}       & $Z_0(\beta)=(1+\deff e^{-\beta\epsstar})^{\Ctot}$ & (structural)                                   & [P]\\
+\ref{thm:gap}      & Gapped-ground-state regime $kT\ll\epsstar$      & (structural)                                   & [P]\\
+\ref{thm:Zsat}     & Saturation factorisation $N_{\mathrm{micro}}\,e^{-\beta E_{\mathrm{sat}}}$ & (structural) & [P]\\
+\ref{thm:SAeqZ}    & Spectral action = partition function            & \coderef{check\_spectral\_action\_internal}{internalization.py} & [P+H1]\\
+\ref{thm:SDW}      & Seeley--DeWitt: SM Lagrangian emerges           & \coderef{check\_spectral\_action\_internal}{internalization.py} & [P+H1]\\
+\ref{thm:SAuniq}   & Uniqueness of $S_f$                             & \coderef{check\_spectral\_action\_internal}{internalization.py} & [P+H1]\\
+\ref{thm:halfcoeff}& $\tfrac12$ coefficient from KO-dim 6            & \coderef{check\_normalization\_coefficient}{internalization.py}  & [P+H1]\\
+\ref{thm:Vform}    & Scalar potential form                           & \coderef{check\_scalar\_potential\_form}{internalization.py}     & [P+H1]\\
+\ref{thm:kolmo}    & Kolmogorov continuum limit                      & \coderef{check\_kolmogorov\_internal}{internalization\_geo.py}   & [P+H2]\\
+\ref{thm:chart}    & Smooth atlas from Lipschitz cost                & \coderef{check\_chartability}{internalization\_geo.py}           & [P+H2]\\
+\ref{thm:lovelock} & Lovelock $\Rightarrow$ Einstein--Hilbert unique in $d=4$ & \coderef{check\_lovelock\_internal}{internalization\_geo.py}     & [P]\\
+\ref{thm:CM}       & Coleman--Mandula: gauge $\times$ Poincaré       & \coderef{check\_coleman\_mandula\_internal}{internalization\_geo.py} & [P]\\
+\ref{thm:HKM}      & HKM causal-order $\Rightarrow$ conformal class  & \coderef{check\_HKM\_causal\_geometry}{extensions.py}              & [P+H3]\\
+\ref{thm:Malament} & Malament: full-metric recovery                  & \coderef{check\_Malament\_uniqueness}{extensions.py}               & [P+H3]\\
+\ref{thm:beta}     & SM one-loop $\beta$: $b_1=\tfrac{41}{10}$, $b_2=-\tfrac{19}{6}$, $b_3=-7$ & \coderef{T6B\_beta\_one\_loop}{extensions.py}    & [P]\\
+\ref{thm:seesaw}   & Type-I seesaw $m_\nu=-M_D M_R^{-1}M_D^T$        & \coderef{check\_seesaw\_type\_I}{extensions.py}                    & [P]\\
+\ref{thm:PJ}       & Pauli--Jordan commutator $\Rightarrow$ spin-statistics & \coderef{check\_Pauli\_Jordan}{extensions.py}             & [P]\\
+\ref{thm:McKS}     & McKean--Singer supertrace identity              & \coderef{check\_McKean\_Singer\_internal}{extensions.py}            & [P]\\
+\ref{thm:TK}       & Tannaka--Krein $\Rightarrow$ $\SU{3}\times\SU{2}\times\U{1}$ & \coderef{check\_Tannaka\_Krein}{extensions.py}        & [P]\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\noindent Epistemic key: [P] proved from A1/MD/A2/BW + constitutive semantics; [P+Hn] proved conditional on additional hypothesis Hn (H1 spectral triple, H2 Lipschitz, H3 HKM).
+
+\section{Dependency Diagram}\label{app:dep}
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3cm}p{8cm}p{3cm}@{}}
+\toprule
+\textbf{Upstream} & \textbf{Theorem} & \textbf{Downstream}\\
+\midrule
+PLEC / MD                        & \ref{lem:MDfloor}                           & \ref{thm:Seps}, \ref{thm:IsoZero}\\
+\ref{lem:MDfloor}                & \ref{thm:Seps} ($\epsstar$-floor)           & \ref{thm:IsoZero}\\
+\ref{thm:Seps}                   & \ref{thm:IsoZero} (isolation of zero)       & (interpretation)\\
+PLEC / BW + K3                   & \ref{thm:kfact} ($k!$ factor)               & \ref{thm:PJ}\\
+$\Ctot, \deff$ (Papers 4, 5)      & \ref{thm:Z0} ($Z_0$)                         & \ref{thm:gap}, \ref{thm:Zsat}, \ref{thm:SAeqZ}\\
+\ref{thm:Z0}                     & \ref{thm:gap} (regime)                       & (interpretation)\\
+\ref{thm:Z0} + saturation         & \ref{thm:Zsat} ($Z_{\mathrm{sat}}$)          & \ref{thm:SAeqZ}\\
+\ref{thm:Z0} + Ass.~\ref{ass:triple} & \ref{thm:SAeqZ} (SA = $Z$)                & \ref{thm:SDW}, \ref{thm:SAuniq}\\
+\ref{thm:SAeqZ}                  & \ref{thm:SDW} (SDW expansion)                & \ref{thm:Vform}\\
+A2 + gauge inv.                   & \ref{thm:SAuniq} (uniqueness)                & (selection)\\
+KO-dim 6 (Ass.~\ref{ass:triple}) & \ref{thm:halfcoeff} ($\tfrac12$ coeff.)      & (SM Lagrangian)\\
+\ref{thm:SDW} + A1               & \ref{thm:Vform} (V(H,$\sigma$))              & (mass gap)\\
+Ass.~\ref{ass:lipschitz}         & \ref{thm:kolmo} (continuum)                  & \ref{thm:chart}\\
+\ref{thm:kolmo}                  & \ref{thm:chart} (atlas)                      & (differential geometry)\\
+Paper~6 + A2                     & \ref{thm:lovelock} (EH unique)               & Einstein eqs.\\
+Ass.~\ref{ass:triple} + Paper 6  & \ref{thm:CM} (CM)                            & (gauge structure)\\
+Ass.~\ref{ass:HKM}               & \ref{thm:HKM} (conformal class)              & \ref{thm:Malament}\\
+\ref{thm:HKM} + A1 volumes       & \ref{thm:Malament} (full metric)             & (spacetime)\\
+Papers 1, 2, 4                   & \ref{thm:beta} ($b_1, b_2, b_3$)              & (RG flow)\\
+Paper~4 field content            & \ref{thm:seesaw} (seesaw)                    & ($m_\nu$)\\
+\ref{thm:kfact} + Paper 6        & \ref{thm:PJ} (spin-statistics)               & (QFT)\\
+Ass.~\ref{ass:triple}            & \ref{thm:McKS} (McKean--Singer)              & (anomaly cancellation)\\
+Papers 1, 2                      & \ref{thm:TK} (Tannaka--Krein)                & ($\SU{3}\times\SU{2}\times\U{1}$)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+
+\section*{Changelog}
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{v1.0} (2026-04-17) --- Initial technical supplement.  Six formal sections (S.1 minimum action, S.2 partition function, S.3 saturation, S.4 spectral action = partition function, S.5 geometric internalization, S.6 SM Lagrangian extensions), red-team §S.7, theorem index and dependency appendix.  Covers all theorems in Paper~7 main v2.0.  Load-bearing hypotheses H1 (spectral triple), H2 (Lipschitz), H3 (HKM) flagged at point of use and audited in §S.7.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,33 @@
+{
+  "title": "APF Paper 7 — Action, Internalization, and the Lagrangian",
+  "description": "<p>Five Parts: Quantum of Action (minimum-action theorem, Isolation of Zero, k! multi-record); Partition Function (closed-form Z_0, gapped-ground-state regime, saturation factorisation); Spectral Action = APF Partition Function (the structural pivot — Connes spectral action equals APF partition function at Boltzmann cutoff; Seeley-DeWitt expansion produces cosmological constant + Einstein-Hilbert + Yang-Mills + Higgs); Geometric Internalization (Lovelock, Coleman-Mandula, HKM, Malament); SM Lagrangian Extensions (one-loop beta coefficients, Type-I seesaw, Pauli-Jordan, McKean-Singer, Tannaka-Krein).</p><p>This repository is the executable mathematical appendix for Paper 7 of the Admissibility Physics Framework (APF). All theorems trace to named check functions in the bundled <code>apf/</code> package.</p>",
+  "creators": [
+    {
+      "name": "Brooke, Ethan",
+      "affiliation": "Independent Researcher, San Anselmo, California, USA",
+      "orcid": "0009-0001-2261-4682"
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": ["action principle", "spectral action", "Connes", "Seeley-DeWitt", "Standard Model Lagrangian", "Type-I seesaw", "internalization", "partition function"],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Ethan-Brooke/APF-Paper-7-Action-Internalization-Lagrangian",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.18604875",
+      "relation": "isVersionOf",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.18604548",
+      "relation": "references",
+      "scheme": "doi"
+    }
+  ],
+  "version": "2.0"
+}
