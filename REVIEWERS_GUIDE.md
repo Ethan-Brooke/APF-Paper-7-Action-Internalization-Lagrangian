@@ -226,7 +226,7 @@ The complex numbers as the unique admissible amplitude field is not a postulate 
 
 ## Citation and Zenodo
 
-This repository is the executable mathematical appendix to APF Paper 7. The canonical archival deposit is at [https://doi.org/10.5281/zenodo.18604875](https://doi.org/10.5281/zenodo.18604875) (DOI: 10.5281/zenodo.18604875).
+This repository is the executable mathematical appendix to APF Paper 7. The canonical archival deposit is at [https://doi.org/10.5281/zenodo.18439513](https://doi.org/10.5281/zenodo.18439513) (DOI: 10.5281/zenodo.18439513).
 
 ---
 

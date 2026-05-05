@@ -11,7 +11,7 @@
   "upload_type": "software",
   "access_right": "open",
   "license": "MIT",
-  "keywords": ["action principle", "spectral action", "Connes", "Standard Model Lagrangian", "internalization"],
+  "keywords": ["action principle", "spectral action", "Connes", "Seeley-DeWitt", "Standard Model Lagrangian", "Type-I seesaw", "internalization", "partition function"],
   "related_identifiers": [
     {
       "identifier": "https://github.com/Ethan-Brooke/APF-Paper-7-Action-Internalization-Lagrangian",
@@ -19,15 +19,15 @@
       "scheme": "url"
     },
     {
-      "identifier": "10.5281/zenodo.18439513",
-      "relation": "isSupplementTo",
+      "identifier": "10.5281/zenodo.18604875",
+      "relation": "isVersionOf",
       "scheme": "doi"
     },
     {
-      "identifier": "10.5281/zenodo.18529115",
+      "identifier": "10.5281/zenodo.18604548",
       "relation": "references",
       "scheme": "doi"
     }
   ],
-  "version": "2.4"
+  "version": "2.0"
 }
